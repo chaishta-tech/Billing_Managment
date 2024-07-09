@@ -1,24 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, TouchableOpacity, Image, Dimensions, Pressable, ScrollView } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet, Linking, Image, Dimensions, Pressable, ScrollView } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Seting_Api } from '../api/authApi';
-
-const salesData = [
-  {
-    id: 'INV_13',
-    gstType: 'Inner GST',
-    billedStatus: 'Billed',
-    dueDate: '2024-06-18',
-    status: 'pending'
-  },
-  {
-    id: 'INV_12',
-    gstType: 'Outer GST',
-    billedStatus: 'Not Billed',
-    dueDate: '2024-06-18',
-    status: 'pending'
-  }
-];
+import { Seting_Api, Dashboard_Api } from '../api/authApi';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -28,9 +11,13 @@ const imageHeight = screenHeight * (4 / 22);
 
 const Dashboard = ({ navigation }) => {
   const [logoUrl, setLogoUrl] = useState(null);
+  const [dashboardData, setDashboardData] = useState([]);
+  const [salesData, setSalesData] = useState([]);
+  const [expense, setexpense] = useState([]);
 
   useEffect(() => {
-    getimage()
+    getimage();
+    getdashboard()
   }, [])
 
   const getimage = async () => {
@@ -39,6 +26,23 @@ const Dashboard = ({ navigation }) => {
       console.log(response)
       if (response.msg === "Data loaded successfully.") {
         setLogoUrl(response.data.logo);
+      } else {
+      }
+    } catch (error) {
+      console.log(error);
+
+    } finally {
+    }
+  };
+
+  const getdashboard = async () => {
+    try {
+      const response = await Dashboard_Api();
+      console.log(response.data)
+      if (response.msg === "Data loaded successfully.") {
+        setDashboardData(response.data);
+        setSalesData(response.data.sales);
+        setexpense(response.data.expenses)
       } else {
 
       }
@@ -54,25 +58,25 @@ const Dashboard = ({ navigation }) => {
       <View style={styles.contentbottom}>
         <View style={{ flexDirection: 'row' }}>
           <Text style={styles.invoiceText}>Invoice: </Text>
-          <Text style={styles.invoiceText1}> {item.id}</Text>
+          <Text style={styles.invoiceText1}>{item.invoice}</Text>
         </View>
-        <Text style={styles.status}>{item.status}</Text>
+        <Text style={styles.status}>{item.payment_status}</Text>
       </View>
 
       <View style={styles.contentbottom}>
         <View style={{ flexDirection: 'row' }}>
           <Text style={styles.invoiceText}>Invoice Date: </Text>
-          <Text style={styles.invoiceText1}> {item.dueDate}</Text>
+          <Text style={styles.invoiceText1}>{item.invoice_date}</Text>
         </View>
         <View style={styles.rps}>
-          <Text style={styles.text}>1500</Text>
+          <Text style={styles.text}>{item.amt}</Text>
         </View>
       </View>
 
       <View style={styles.contentbottom}>
         <View style={{ flexDirection: 'row' }}>
           <Text style={styles.invoiceText}>Due Date: </Text>
-          <Text style={styles.invoiceText1}> {item.dueDate}</Text>
+          <Text style={styles.invoiceText1}>{item.due_date}</Text>
         </View>
         <View style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }}>
           <MaterialCommunityIcons name="playlist-edit" size={26} color="black" />
@@ -80,18 +84,61 @@ const Dashboard = ({ navigation }) => {
       </View>
 
       <View style={styles.button}>
-        <Pressable style={styles.button1}>
-          <MaterialCommunityIcons name="eye" size={26} color="black" style={{ marginRight: 10 }} />
+        <Pressable style={styles.button1} onPress={() => Linking.openURL(item.admin_copy)}>
+          <MaterialCommunityIcons name="eye" size={26} color="black" style={{ marginRight: 5 }} />
           <Text style={styles.buttontext}>Admin Invoice</Text>
         </Pressable>
-        <Pressable style={styles.button1}>
-          <MaterialCommunityIcons name="eye" size={26} color="black" style={{ marginRight: 10 }} />
+        <Pressable style={styles.button1} onPress={() => Linking.openURL(item.customer_copy)}>
+          <MaterialCommunityIcons name="eye" size={26} color="black" style={{ marginRight: 5 }} />
           <Text style={styles.buttontext}>Customer Invoice</Text>
         </Pressable>
       </View>
 
     </View>
   );
+
+  const renderItemexpense = ({ item }) => (
+    <View style={styles.card}>
+      <View style={styles.leftContent}>
+        <View style={styles.datetime}>
+          <Text>2024-07-05 18:28:00</Text>
+          <Text style={styles.cash}>Cash</Text>
+        </View>
+        <View style={styles.details}>
+          <View style={styles.icon}>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={styles.detailText}>Name:</Text>
+              <Text style={styles.text1}> Water Bill</Text>
+            </View>
+            <View style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }}>
+              <MaterialCommunityIcons name="playlist-edit" size={26} color="black" />
+            </View>
+
+          </View>
+
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.detailText}>Category:</Text>
+            <Text style={styles.text1}> Travel</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.detailText}>Vendor Name:</Text>
+            <Text style={styles.text1}> Vendor 1</Text>
+          </View>
+
+          <View style={styles.icon}>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={styles.detailText}>Note:</Text>
+              <Text style={styles.text1}> anything</Text>
+            </View>
+            <View style={styles.rps}>
+              <Text style={styles.text}>1500</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+  )
 
   const naviagteinvoice = async () => {
     navigation.navigate('Add Invoice')
@@ -114,26 +161,30 @@ const Dashboard = ({ navigation }) => {
           <Text style={styles.innertext}>Add Expense</Text>
         </Pressable>
       </View>
-      <View style={styles.summaryDetails}>
-        <View style={styles.summaryBox}>
-          <Text style={styles.number}>1</Text>
-          <Text style={styles.innertext1}>Total Customer</Text>
+      {dashboardData && dashboardData.total_customer && (
+        <View style={styles.summaryDetails}>
+          <View style={styles.summaryBox}>
+            <Text style={styles.number}>{dashboardData.total_customer.total_customer}</Text>
+            <Text style={styles.innertext1}>Total Customer</Text>
+          </View>
+          <View style={styles.summaryBox}>
+            <Text style={styles.number}>{dashboardData.total_vendor.total_vendor}</Text>
+            <Text style={styles.innertext1}>Total Vendor</Text>
+          </View>
         </View>
-        <View style={styles.summaryBox}>
-          <Text style={styles.number}>3</Text>
-          <Text style={styles.innertext1}>Total Vendor</Text>
+      )}
+      {dashboardData && dashboardData.total_sale && (
+        <View style={styles.summaryDetails}>
+          <View style={styles.summaryBox}>
+            <Text style={styles.number}>{dashboardData.total_sale.total_sale}</Text>
+            <Text style={styles.innertext1}>Total Sale</Text>
+          </View>
+          <View style={styles.summaryBox}>
+            <Text style={styles.number}>{dashboardData.total_expense.total_expense}</Text>
+            <Text style={styles.innertext1}>Total Expense</Text>
+          </View>
         </View>
-      </View>
-      <View style={styles.summaryDetails}>
-        <View style={styles.summaryBox}>
-          <Text style={styles.number}>5500.00</Text>
-          <Text style={styles.innertext1}>Total Sale</Text>
-        </View>
-        <View style={styles.summaryBox}>
-          <Text style={styles.number}>2000.00</Text>
-          <Text style={styles.innertext1}>Total Expense</Text>
-        </View>
-      </View>
+      )}
       <View style={styles.invoice}>
         <Text style={styles.sectionTitle}>Invoice</Text>
       </View>
@@ -141,7 +192,17 @@ const Dashboard = ({ navigation }) => {
       <FlatList
         data={salesData}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.id.toString()}
+      />
+
+      <View style={styles.invoice}>
+        <Text style={styles.sectionTitle}>Expenses</Text>
+      </View>
+
+      <FlatList
+        data={expense}
+        renderItem={renderItemexpense}
+        keyExtractor={item => item.id.toString()}
       />
 
     </ScrollView>
@@ -281,6 +342,69 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: 'black'
+  },
+  card: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 20,
+    margin: 10,
+    marginHorizontal: 6,
+    backgroundColor: '#d1dbeb',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  leftContent: {
+    flex: 1,
+  },
+  datetime: {
+    marginBottom: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    // width:'200%',
+    alignItems: 'center'
+  },
+  cash: {
+    color: '#625bc5',
+    fontSize: 17,
+    fontWeight: '800'
+  },
+  icon: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    // width: '200%',
+    alignItems: 'center'
+  },
+  plusButton: {
+    width: 50,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  detailText: {
+    marginBottom: 10,
+  },
+  text1: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: 'black'
+  },
+  rps: {
+    backgroundColor: '#385dab',
+    padding: 5,
+    borderRadius: 5
+  },
+  text: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '700'
   }
 });
 

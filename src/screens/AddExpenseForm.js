@@ -350,8 +350,8 @@ export default function AddExpenseForm() {
   };
 
   return (
-    <SafeAreaView style={{flex: 1}}>
-      <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
+      <ScrollView>
         <TouchableOpacity onPress={chooseImage} style={styles.imagePicker}>
           {selectedImage ? (
             <Image source={{uri: selectedImage}} style={styles.image} />
@@ -543,14 +543,15 @@ export default function AddExpenseForm() {
           </View>
         </Modal>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    backgroundColor:'#fff'
+    flex: 1,
+    backgroundColor:'#fff',
+    // top:10
   },
   imagePicker: {
     width: '90%',

@@ -78,16 +78,14 @@ export default function AddSale({ navigation }) {
   const showDueDatePickerHandler = () => {
     setShowDueDatePicker(true);
   };
+
   const formatDate = (date) => {
-    return date.toLocaleDateString('en-GB', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    });
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
-  // const Submit = () => {
-  //   navigation.navigate('All Sales')
-  // };
 
   useEffect(() => {
     getExpenseCategory();
@@ -195,43 +193,43 @@ export default function AddSale({ navigation }) {
     }
   };
 
-  const addInvoice = async () => {
-    console.log(selectedcustomer, salesDate, dueDate, tcs, Gst, items, id);
   
-    try {
-      const response = await Add_Invoice(
-        selectedcustomer,
-        salesDate,
-        dueDate,
-        tcs,
-        Gst,
-        items,
-        id !== undefined && id !== null ? id : ''
-      );
-  
-      console.log(response);
-  
-      if (response.result.msg === "Lead Added Successfully") {
+    const addInvoice = async () => {
+      console.log(selectedcustomer, salesDate, dueDate, tcs, Gst2, items);
+    
+      try {
+          const response = await Add_Invoice(
+            selectedcustomer,
+            items,        
+            formatDate(dueDate),
+            tcs,         
+            formatDate(salesDate),    
+            Gst2,          
+          );
+    
+        console.log(response);
+    
+        if (response.msg === "Save Successfully.") {
+          Toast.show({
+            text1: 'Save successfully',
+            type: 'success',
+          });
+          navigation.navigate('Invoice')
+        } else {
+          Toast.show({
+            text1: 'Failed to add lead!',
+            type: 'error',
+          });
+        }
+      } catch (error) {
+        console.log(error);
         Toast.show({
-          text1: 'Lead added successfully',
-          type: 'success',
-        });
-        navigation.navigate('bottom');
-      } else {
-        Toast.show({
-          text1: 'Failed to add lead!',
+          text1: 'Error',
           type: 'error',
         });
       }
-    } catch (error) {
-      console.log(error);
-      Toast.show({
-        text1: 'Error',
-        type: 'error',
-      });
-    }
-  };
-  
+    };
+    
 
   const addItem = () => {
     if (

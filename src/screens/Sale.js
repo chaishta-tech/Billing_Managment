@@ -1,12 +1,15 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import React, { useState,useEffect } from 'react';
+import { Pressable, StyleSheet, Text, View, FlatList,Linking } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { Picker } from '@react-native-picker/picker';
 import AntDesign from 'react-native-vector-icons/AntDesign';
-import { Customer_Api } from '../api/authApi';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Customer_Api, Get_Sales_Api } from '../api/authApi';
+import Toast from 'react-native-toast-message';
 
 const Sale = ({ navigation }) => {
   const [customer, setCustomer] = useState([]);
-  const [selectedcustomer, setselectedcustomer] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState('');
+  const [salesData, setSalesData] = useState([]);
 
   const onPressPlusButton = () => {
     navigation.navigate('Add Invoice');
@@ -24,7 +27,7 @@ const Sale = ({ navigation }) => {
         setCustomer(response.data);
       } else {
         Toast.show({
-          text1: 'Failed to login!',
+          text1: 'Failed to load customers!',
           type: 'error',
         });
       }
@@ -37,23 +40,98 @@ const Sale = ({ navigation }) => {
     }
   };
 
-  const handlecustomer = (itemValue, itemIndex) => {
-    setselectedcustomer(itemValue);
+  const getInvoice = async (customerId) => {
+    try {
+      const response = await Get_Sales_Api(customerId);
+      console.log(response.data);
+      if (response.msg === 'Data loaded successfully.') {
+        setSalesData(response.data);
+      } else {
+        Toast.show({
+          text1: 'Failed to load invoices!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log('Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
   };
+
+  const handleCustomer = (itemValue) => {
+    setSelectedCustomer(itemValue);
+    getInvoice(itemValue);
+  };
+
+  const renderItem = ({ item }) => (
+    <View style={styles.invoiceItem}>
+      <View style={styles.contentbottom}>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={styles.invoiceText}>Invoice: </Text>
+          <Text style={styles.invoiceText1}>{item.invoice}</Text>
+        </View>
+        <Text style={styles.status}>{item.payment_status}</Text>
+      </View>
+  
+      <View style={styles.contentbottom}>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={styles.invoiceText}>Invoice Date: </Text>
+          <Text style={styles.invoiceText1}>{item.invoice_date}</Text>
+        </View>
+        <View style={styles.rps}>
+          <Text style={styles.text}>{item.amt}</Text>
+        </View>
+      </View>
+  
+      <View style={styles.contentbottom}>
+        <View style={{ flexDirection: 'row' }}>
+          <Text style={styles.invoiceText}>Due Date: </Text>
+          <Text style={styles.invoiceText1}>{item.due_date}</Text>
+        </View>
+        <Pressable
+          style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }}
+          onPress={() => Linking.openURL(item.admin_copy)}>
+          <MaterialCommunityIcons name="playlist-edit" size={26} color="black" />
+        </Pressable>
+      </View>
+  
+      <View style={styles.button}>
+        <Pressable style={styles.button1} onPress={() => Linking.openURL(item.admin_copy)}>
+          <MaterialCommunityIcons name="eye" size={26} color="black" style={{ marginRight: 5 }} />
+          <Text style={styles.buttontext}>Admin Invoice</Text>
+        </Pressable>
+        <Pressable style={styles.button1} onPress={() => Linking.openURL(item.customer_copy)}>
+          <MaterialCommunityIcons name="eye" size={26} color="black" style={{ marginRight: 5 }} />
+          <Text style={styles.buttontext}>Customer Invoice</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+  
 
   return (
     <View style={styles.container}>
       <View style={styles.pickerContainer}>
-      <Picker
-            selectedValue={selectedcustomer}
-            style={styles.picker}
-            onValueChange={handlecustomer}>
-            <Picker.Item label="Select Customer" value="" />
-            {customer.map((src, index) => (
-              <Picker.Item key={index} label={src.name} value={src.id} />
-            ))}
-          </Picker>
+        <Picker
+          selectedValue={selectedCustomer}
+          style={styles.picker}
+          onValueChange={handleCustomer}>
+          <Picker.Item label="Select Customer" value="" />
+          {customer.map((src, index) => (
+            <Picker.Item key={index} label={src.name} value={src.id} />
+          ))}
+        </Picker>
       </View>
+
+      <FlatList
+        data={salesData}
+        renderItem={renderItem}
+        keyExtractor={item => item.id.toString()}
+      />
+
       <View style={styles.plusButtonContainer}>
         <Pressable style={styles.plusButton} onPress={onPressPlusButton}>
           <AntDesign name="plus" size={35} color="#dbdad3" />
@@ -76,6 +154,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginHorizontal: 6,
   },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
   plusButtonContainer: {
     position: 'absolute',
     backgroundColor: '#385dab',
@@ -95,4 +177,65 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  invoiceItem: {
+    backgroundColor: '#ebeff5',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  invoiceText: {
+    fontSize: 13,
+    fontWeight: '600'
+  },
+  invoiceText1: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: 'black'
+  },
+  status: {
+    color: 'orange',
+    fontWeight: 'bold',
+    marginTop: 4,
+  },
+  contentbottom: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 4,
+  },
+  rps: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    fontWeight: 'bold',
+  },
+  button: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  buttontext: {
+    fontSize: 16,
+  },
+  button1: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    padding: 5,
+    borderColor: '#625bc5',
+  },
+  buttontext: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: 'black'
+  }
 });
