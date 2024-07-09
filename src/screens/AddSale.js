@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,26 +8,56 @@ import {
   SafeAreaView,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {TextInput} from 'react-native-paper';
-import {Picker} from '@react-native-picker/picker';
+import { TextInput } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Button from '../components/Button';
 import { NavigationContainer } from '@react-navigation/native';
+import { Get_Expense_Sub__Category_Api, Get_Expense_Category_Api, GST_Api, Customer_Api ,Add_Invoice} from '../api/authApi';
+import Toast from 'react-native-toast-message';
 
-
-export default function AddSale({navigation}) {
-  const [billed, setBilled] = useState('');
-  const [category, setCategory] = useState('');
-  const [subCategory, setSubCategory] = useState('');
+export default function AddSale({ navigation }) {
+  const [tcs, setTcs] = useState('');
+  const [Gst, setgst] = useState([]);
+  const [selectedgst, setselectedgst] = useState('')
+  const [category, setCategory] = useState([]);
+  const [subCategory, setSubCategory] = useState([]);
+  const [selectedcategory, setselectedcategory] = useState('');
+  const [selectedSubCategory, setselectedSubCategory] = useState('');
   const [salesDate, setSalesDate] = useState(new Date());
   const [dueDate, setDueDate] = useState(new Date());
-  const [customer, setCustomer] = useState('');
-  const [sale, setSale] = useState('');
+  const [customer, setCustomer] = useState([]);
+  const [selectedcustomer, setselectedcustomer] = useState('');
+  const [Gst2, setGst2] = useState([]);
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('');
+  const[commision,setcommision]=useState('')
   const [price, setPrice] = useState('');
   const [showSalesDatePicker, setShowSalesDatePicker] = useState(false);
   const [showDueDatePicker, setShowDueDatePicker] = useState(false);
+  const [Gsttype, setgsttye] = useState('')
+  const [items, setItems] = useState([]);
+
+  const handlecustomer = (itemValue, itemIndex) => {
+    setselectedcustomer(itemValue);
+  };
+
+  const dummyTCSData = [
+    { label: '0', value: '0' },
+    { label: '5', value: '5' },
+    { label: '15', value: '15' },
+    { label: '20', value: '20' },
+  ];
+
+  const dummyGSTData = [
+    { label: 'Outer GST', value: 'Outer GST' },
+    { label: 'Inner GST', value: 'Inner GST' },
+  ];
+
+  const dummyGSTtypeData = [
+    { label: 'Include', value: 'Include' },
+    { label: 'Exclude', value: 'Exclude' },
+  ];
 
   const onChangeSalesDate = (event, selectedDate) => {
     const currentDate = selectedDate || salesDate;
@@ -55,20 +85,219 @@ export default function AddSale({navigation}) {
       day: '2-digit',
     });
   };
-  const Submit = () =>{
-    navigation.navigate('All Sales')
+  // const Submit = () => {
+  //   navigation.navigate('All Sales')
+  // };
+
+  useEffect(() => {
+    getExpenseCategory();
+    getgst();
+    getCustomer();
+  }, []);
+
+  const getCustomer = async () => {
+    try {
+      const response = await Customer_Api();
+      console.log(response.data);
+      if (response.msg === 'Data loaded successfully.') {
+        setCustomer(response.data);
+      } else {
+        Toast.show({
+          text1: 'Failed to login!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log('Login Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
   };
 
+  const handleExpenseCategory = (itemValue, itemIndex) => {
+    console.log(itemValue)
+    const selectedType = category.find(typ => typ.id === itemValue);
+    console.log('idddddddd', selectedType.id)
+    setselectedcategory(itemValue);
+    getExpenseSubCategory(selectedType.id);
+
+  };
+  const handleExpenseSubCategory = (itemValue, itemIndex) => {
+    setselectedSubCategory(itemValue);
+  };
+
+  const handlegst = (itemValue, itemIndex) => {
+    setselectedgst(itemValue);
+  };
+
+  const getExpenseCategory = async () => {
+    try {
+      const response = await Get_Expense_Category_Api();
+      console.log(response.data);
+      if (response.msg === 'Data loaded successfully.') {
+        setCategory(response.data);
+      } else {
+        Toast.show({
+          text1: 'Failed to login!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log('Login Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
+  };
+
+  const getgst = async () => {
+    try {
+      const response = await GST_Api();
+      console.log(response.data);
+      if (response.msg === 'Data loaded successfully.') {
+        setgst(response.data)
+      } else {
+        Toast.show({
+          text1: 'Failed to login!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log('Login Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
+  };
+
+  const getExpenseSubCategory = async itemValue => {
+    try {
+      const response = await Get_Expense_Sub__Category_Api(itemValue);
+      console.log(response.data);
+      if (response.msg === 'Data loaded successfully.') {
+        setSubCategory(response.data);
+      } else {
+        Toast.show({
+          text1: 'Failed to login!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log('Login Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
+  };
+
+  const addInvoice = async () => {
+    console.log(selectedcustomer, salesDate, dueDate, tcs, Gst, items, id);
+  
+    try {
+      const response = await Add_Invoice(
+        selectedcustomer,
+        salesDate,
+        dueDate,
+        tcs,
+        Gst,
+        items,
+        id !== undefined && id !== null ? id : ''
+      );
+  
+      console.log(response);
+  
+      if (response.result.msg === "Lead Added Successfully") {
+        Toast.show({
+          text1: 'Lead added successfully',
+          type: 'success',
+        });
+        navigation.navigate('bottom');
+      } else {
+        Toast.show({
+          text1: 'Failed to add lead!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
+  };
+  
+
+  const addItem = () => {
+    if (
+      !selectedcategory ||
+      !selectedSubCategory ||
+      !name ||
+      !quantity ||
+      !price ||
+      !selectedgst ||
+      !Gsttype ||
+      !commision 
+    ) {
+      Toast.show({
+        text1: 'Please fill all fields',
+        type: 'error',
+      });
+      return;
+    }
+  
+    const selectedCategoryObject = category.find(
+      (cat) => cat.id === selectedcategory
+    );
+    const selectedSubCategoryObject = subCategory.find(
+      (subCat) => subCat.name === selectedSubCategory
+    );
+    const selectedGstObject = Gst.find((gst) => gst.gst === selectedgst);
+  
+    const newItem = {
+      prod_category: selectedCategoryObject ? selectedCategoryObject.name : '',
+      prod_subcategory: selectedSubCategoryObject
+        ? selectedSubCategoryObject.name
+        : '',
+      description: name,
+      qty: quantity,
+      price: price,
+      gst: selectedGstObject ? selectedGstObject.gst : '',
+      gst_type: Gsttype,
+      commision: commision, // Include commission here
+    };
+  
+    setItems([...items, newItem]);
+  
+    setselectedcategory('');
+    setselectedSubCategory('');
+    setName('');
+    setQuantity('');
+    setPrice('');
+    setselectedgst('');
+    setgsttye('');
+    setcommision('');
+  };
+  
+
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
 
-      <View style={styles.pickerContainer}>
+        <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={customer}
+            selectedValue={selectedcustomer}
             style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setCustomer(itemValue)}>
+            onValueChange={handlecustomer}>
             <Picker.Item label="Select Customer" value="" />
+            {customer.map((src, index) => (
+              <Picker.Item key={index} label={src.name} value={src.id} />
+            ))}
           </Picker>
         </View>
 
@@ -116,43 +345,66 @@ export default function AddSale({navigation}) {
 
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={subCategory}
+            selectedValue={tcs}
             style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setSubCategory(itemValue)}>
+            onValueChange={(itemValue, itemIndex) => setTcs(itemValue)}>
             <Picker.Item label="Select TCS" value="" />
+            {dummyTCSData.map((item, index) => (
+              <Picker.Item key={index} label={item.label} value={item.value} />
+            ))}
           </Picker>
         </View>
 
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={sale}
+            selectedValue={Gst2}
             style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setSale(itemValue)}>
+            onValueChange={(itemValue, itemIndex) => setGst2(itemValue)}>
             <Picker.Item label="Select GST Type" value="" />
+            {dummyGSTData.map((item, index) => (
+              <Picker.Item key={index} label={item.label} value={item.value} />
+            ))}
           </Picker>
         </View>
 
         <View style={styles.itemContainer}>
-          <Text style={{fontSize: 16, fontWeight: '500'}}> Items </Text>
-          <TouchableOpacity style={{width: 50,height: 24, backgroundColor: '#385dab', alignItems: 'center', justifyContent: 'center', borderRadius: 10,}}>
-            <Text style={{color: 'white', fontWeight: 'bold', fontSize: 16}}>Add</Text>
+          <Text style={{ fontSize: 16, fontWeight: '500' }}> Items </Text>
+          <TouchableOpacity
+            style={{
+              width: 50,
+              height: 24,
+              backgroundColor: '#385dab',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderRadius: 10,
+            }}
+            onPress={addItem}>
+            <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
+              Add
+            </Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={category}
+            selectedValue={selectedcategory}
             style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}>
+            onValueChange={handleExpenseCategory}>
             <Picker.Item label="Select Category" value="" />
+            {category.map((src, index) => (
+              <Picker.Item key={index} label={src.name} value={src.id} />
+            ))}
           </Picker>
         </View>
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={subCategory}
+            selectedValue={selectedSubCategory}
             style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setSubCategory(itemValue)}>
+            onValueChange={handleExpenseSubCategory}>
             <Picker.Item label="Select Sub Category" value="" />
+            {subCategory.map((src, index) => (
+              <Picker.Item key={index} label={src.name} value={src.name} />
+            ))}
           </Picker>
         </View>
         <TextInput
@@ -181,19 +433,25 @@ export default function AddSale({navigation}) {
 
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={customer}
+            selectedValue={selectedgst}
             style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setCustomer(itemValue)}>
+            onValueChange={handlegst}>
             <Picker.Item label="Select GST" value="" />
+            {Gst.map((src, index) => (
+              <Picker.Item key={index} label={src.gst} value={src.gst} />
+            ))}
           </Picker>
         </View>
 
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={sale}
+            selectedValue={Gsttype}
             style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setSale(itemValue)}>
+            onValueChange={(itemValue, itemIndex) => setgsttye(itemValue)}>
             <Picker.Item label="Select GST Type" value="" />
+            {dummyGSTtypeData.map((item, index) => (
+              <Picker.Item key={index} label={item.label} value={item.value} />
+            ))}
           </Picker>
         </View>
 
@@ -201,9 +459,84 @@ export default function AddSale({navigation}) {
           label="Enter Customer Per Qty"
           mode="outlined"
           style={styles.input}
+          keyboardType='numeric'
+          value={commision}
+          onChangeText={setcommision}
         />
 
-        <Button title="Submit" onPress={Submit} />
+        {items.length > 0 &&
+          items.map((item, index) => (
+            <View key={index} style={styles.itemContainer1}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                  <Text style={{ fontWeight: '600' }}>Category:</Text>
+                  <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+                    {' '}
+                    {item.prod_category}
+                  </Text>
+                </View>
+                <Fontisto name="trash" size={20} color="#000" style={styles.icon} />
+              </View>
+
+
+              <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                <Text style={{ fontWeight: '600' }}>Sub Category: </Text>
+                <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+                  {' '}
+                  {item.prod_subcategory}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                  <Text style={{ fontWeight: '600' }}>Price:</Text>
+                  <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+                    {' '}
+                    {item.price}
+                  </Text>
+                </View>
+                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                  <Text style={{ fontWeight: '600' }}>Quantity:</Text>
+                  <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+                    {' '}
+                    {item.qty}
+                  </Text>
+                </View>
+              </View>
+
+
+              <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                <Text style={{ fontWeight: '600' }}>GST:</Text>
+                <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+                  {' '}
+                  {item.gst}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                <Text style={{ fontWeight: '600' }}>Commision:</Text>
+                <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+                  {' '}
+                  {item.commision}
+                </Text>
+              </View>
+              <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                <Text style={{ fontWeight: '600' }}>Description:</Text>
+                <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+                  {' '}
+                  {item.description}
+                </Text>
+              </View>
+
+              <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+                <Text style={{ fontWeight: '600' }}>GST Type:</Text>
+                <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+                  {' '}
+                  {item.gst_type}
+                </Text>
+              </View>
+            </View>
+          ))}
+
+        <Button title="Submit" onPress={addInvoice} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -212,7 +545,8 @@ export default function AddSale({navigation}) {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 10,
+    backgroundColor: '#fff',
+    padding: 6
   },
   pickerContainer: {
     borderWidth: 1,
@@ -262,11 +596,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     flex: 1,
   },
+  itemContainer1: {
+    backgroundColor: '#e8effa',
+    padding: 10,
+    borderRadius: 5,
+  },
   itemContainer: {
-    justifyContent: 'space-between',
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: '#aac6f2',
+    backgroundColor: '#e8effa',
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,

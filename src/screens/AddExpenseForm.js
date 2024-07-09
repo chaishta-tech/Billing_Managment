@@ -23,50 +23,84 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Button from '../components/Button';
 import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
 import {useNavigation} from '@react-navigation/native';
-import {Customers_Api} from '../api/authApi';
+import {
+  Category_Api,
+  Customer_Api,
+  Vendor_Api,
+  Get_Expense_Category_Api,
+  Get_Expense_Sub__Category_Api,
+  Get_Sale_Api,
+  Get_Vendor_Labour_Api,
+} from '../api/authApi';
 import Toast from 'react-native-toast-message';
 
 export default function AddExpenseForm() {
-  useEffect(() => {}, []);
-
   const navigation = useNavigation();
 
   const [billed, setBilled] = useState('');
   const [name, setName] = useState('');
   const [note, setNote] = useState('');
-  const [category, setCategory] = useState('');
-  const [subCategory, setSubCategory] = useState('');
+  const [category, setCategory] = useState([]);
+  const [subCategory, setSubCategory] = useState([]);
   const [date, setDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [amount, setAmount] = useState('');
-  const [customer, setCustomer] = useState([]);
-  const [sale, setSale] = useState('');
-  const [expenseType, setExpenseType] = useState('');
+  const [sale, setSale] = useState([]);
+  const [expenseType, setExpenseType] = useState([]);
   const [paymentType, setPaymentType] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-const[selectedcustomer,setselectedcustomer]=useState('')
+  const [customer, setCustomer] = useState([]);
+  const [selectedcustomer, setselectedcustomer] = useState('');
+  const [selectedcategory, setselectedcategory] = useState('');
+  const [selectedSubCategory, setselectedSubCategory] = useState('');
+  const [selectedSale, setselectedSale] = useState('');
+  const [selectedExpenseType, setselectedExpenseType] = useState('');
+
 
   useEffect(() => {
     requestCameraPermission();
   }, []);
 
   useEffect(() => {
+    getCategory();
     getCustomer();
+    getExpenseType();
+    getVendor();
   }, []);
 
-
-  const handlecustomer= (itemValue, itemIndex) => {
+  const handlecustomer = (itemValue, itemIndex) => {
+    console.log(itemValue);
+    const selectedType = customer.find(typ => typ.id === itemValue);
+    console.log(selectedType)
     setselectedcustomer(itemValue);
-};
+    getSale(selectedType.id);
+  };
+  const handleExpenseCategory = (itemValue, itemIndex) => {
+    console.log(itemValue);
+    setselectedcategory(itemValue);
+    getExpenseSubCategory(itemValue);
+  };
+  const handleExpenseSubCategory = (itemValue, itemIndex) => {
+    setselectedSubCategory(itemValue);
+  };
 
-  const getCustomer=async ()=>{
+  const handleSale = (itemValue, itemIndex) => {
+    console.log(itemValue)
+    setselectedSale(itemValue);
+  };
+
+  const handleExpenseType = (itemValue, itemIndex) => {
+    console.log(itemValue)
+    setselectedExpenseType(itemValue);
+  };
+  
+  const getCustomer = async () => {
     try {
-      const response = await Customers_Api();
+      const response = await Customer_Api();
       console.log(response.data);
       if (response.msg === 'Data loaded successfully.') {
-setCustomer(response.data)
-        navigation.navigate('Bottom');
+        setCustomer(response.data);
       } else {
         Toast.show({
           text1: 'Failed to login!',
@@ -80,11 +114,156 @@ setCustomer(response.data)
         type: 'error',
       });
     }
-  }
+  };
 
+  const getVendor= async () => {
+    try {
+      const response = await Vendor_Api();
+      console.log('vendor',response.data);
+      if (response.msg === 'Data loaded successfully.') {
+        setSale(response.data);
+      } else {
+        Toast.show({
+          text1: 'Failed to login!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log('Login Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
+  };
+
+  const getCategory = async () => {
+    try {
+      const response = await Category_Api();
+      console.log(response.data);
+      if (response.msg === 'Data loaded successfully.') {
+        setCategory(response.data);
+      } else {
+        Toast.show({
+          text1: 'Failed to login!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log('Login Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
+  };
+
+  const getExpenseCategory = async () => {
+    try {
+      const response = await Get_Expense_Category_Api();
+      console.log(response.data);
+      if (response.msg === 'Data loaded successfully.') {
+        setCategory(response.data);
+        Toast.show({
+          text1: 'User login successful',
+          type: 'success',
+        });
+        // navigation.navigate('Bottom');
+      } else {
+        Toast.show({
+          text1: 'Failed to login!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log('Login Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
+  };
+
+  const getExpenseSubCategory = async itemValue => {
+    try {
+      const response = await Get_Expense_Sub__Category_Api(itemValue);
+      console.log(response.data);
+      if (response.msg === 'Data loaded successfully.') {
+        setSubCategory(response.data);
+        Toast.show({
+          text1: 'User login successful',
+          type: 'success',
+        });
+        // navigation.navigate('Bottom');
+      } else {
+        Toast.show({
+          text1: 'Failed to login!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log('Login Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
+  };
+
+  const getSale = async itemValue => {
+    try {
+      const response = await Get_Sale_Api(itemValue);
+      console.log(response.data);
+      if (response.msg === 'Data loaded successfully.') {
+        setSale(response.data);
+        Toast.show({
+          text1: 'User login successful',
+          type: 'success',
+        });
+        
+      } else {
+        Toast.show({
+          text1: 'Failed to login!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log('Login Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
+  };
+
+  const getExpenseType = async itemValue => {
+    try {
+      const response = await Get_Vendor_Labour_Api(itemValue);
+      console.log(response.data);
+      if (response.msg === 'Data loaded successfully.') {
+        setExpenseType(response.data);
+        Toast.show({
+          text1: 'User login successful',
+          type: 'success',
+        });
+        
+      } else {
+        Toast.show({
+          text1: 'Failed to login!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log('Login Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
+  };
   const Submit = () => {
     // navigation.navigate('All Expenses')
-    navigation.goBack();
+    // navigation.goBack();
   };
 
   const onChangeDate = (event, selectedDate) => {
@@ -184,17 +363,6 @@ setCustomer(response.data)
           )}
         </TouchableOpacity>
 
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={billed}
-            style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setBilled(itemValue)}>
-            <Picker.Item label="Select Billed / Not Billed" value="" />
-            <Picker.Item label="Billed" value="billed" />
-            <Picker.Item label="Not Billed" value="not_billed" />
-          </Picker>
-        </View>
-
         <TextInput
           style={styles.input}
           label="Enter Name"
@@ -215,21 +383,27 @@ setCustomer(response.data)
 
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={category}
+            selectedValue={selectedcategory}
             style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}>
+            onValueChange={handleExpenseCategory}>
             <Picker.Item label="Select Category" value="" />
+            {category.map((src, index) => (
+              <Picker.Item key={index} label={src.name} value={src.name} />
+            ))}
           </Picker>
         </View>
-
+{/* 
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={subCategory}
+            selectedValue={selectedSubCategory}
             style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setSubCategory(itemValue)}>
+            onValueChange={handleExpenseSubCategory}>
             <Picker.Item label="Select Sub Category" value="" />
+            {subCategory.map((src, index) => (
+              <Picker.Item key={index} label={src.name} value={src.name} />
+            ))}
           </Picker>
-        </View>
+        </View> */}
 
         <View style={styles.pickerContainer}>
           <TouchableOpacity
@@ -247,7 +421,7 @@ setCustomer(response.data)
               value={date}
               mode="date"
               accentColor="red"
-              display="default"
+              // display="default"
               onChange={onChangeDate}
             />
           )}
@@ -269,6 +443,18 @@ setCustomer(response.data)
             onValueChange={handlecustomer}>
             <Picker.Item label="Select Customer" value="" />
             {customer.map((src, index) => (
+              <Picker.Item key={index} label={src.name} value={src.id} />
+            ))}
+          </Picker>
+        </View>
+
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={selectedSale}
+            style={styles.picker}
+            onValueChange={handleSale}>
+            <Picker.Item label="Select Vender" value="" />
+            {sale.map((src, index) => (
               <Picker.Item key={index} label={src.name} value={src.name} />
             ))}
           </Picker>
@@ -276,28 +462,12 @@ setCustomer(response.data)
 
         <View style={styles.pickerContainer}>
           <Picker
-            selectedValue={sale}
+            selectedValue={billed}
             style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setSale(itemValue)}>
-            <Picker.Item label="Select Sale" value="" />
-          </Picker>
-        </View>
-
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={expenseType}
-            style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setExpenseType(itemValue)}>
-            <Picker.Item label="Select Expense Type" value="" />
-          </Picker>
-        </View>
-
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={paymentType}
-            style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setPaymentType(itemValue)}>
-            <Picker.Item label="Select Payment Mode" value="" />
+            onValueChange={(itemValue, itemIndex) => setBilled(itemValue)}>
+            <Picker.Item label="Bank Transfer" value="" />
+            <Picker.Item label="Cheque" value="billed" />
+            <Picker.Item label="Cash" value="not_billed" />
           </Picker>
         </View>
 
@@ -380,11 +550,11 @@ setCustomer(response.data)
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    padding: 6,
+    backgroundColor:'#fff'
   },
   imagePicker: {
     width: '90%',
-    height: 200,
+    height: 150,
     borderWidth: 1.5,
     borderColor: '#37b8af',
     borderStyle: 'dashed',
@@ -419,7 +589,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     fontSize: 18,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#fff',
   },
   icon: {
     marginLeft: '40%',
@@ -430,6 +600,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
     marginBottom: 10,
     color: '#000',
+    backgroundColor:'#fff'
   },
   picker: {
     height: 50,

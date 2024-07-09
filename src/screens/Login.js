@@ -1,10 +1,10 @@
-import {Image, StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, View,Dimensions} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import Button from '../components/Button';
 import {TextInput} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Login_Api} from '../api/authApi';
+import {Login_Api,Seting_Api} from '../api/authApi';
 import Toast from 'react-native-toast-message';
 
 const Login = ({navigation}) => {
@@ -13,11 +13,12 @@ const Login = ({navigation}) => {
 
   useEffect(() => {
     checkForToken();
+    getimage()
   }, []);
 
   const checkForToken = async () => {
     const token = await AsyncStorage.getItem('authToken');
-    // console.log(token);
+    console.log(token);
     if (token) {
       navigation.navigate('Bottom');
     }
@@ -65,13 +66,36 @@ const Login = ({navigation}) => {
     }
   };
 
+  const [logoUrl, setLogoUrl] = useState(null);
+  
+  const getimage = async () => {
+    try {
+        const response = await Seting_Api();
+        console.log(response)
+        if (response.msg === "Data loaded successfully.") {
+          setLogoUrl(response.data.logo); 
+        } else {
+
+        }
+    } catch (error) {
+        console.log(error);
+
+    } finally {
+    }
+};
+
+const screenWidth = Dimensions.get('window').width;
+const screenHeight = Dimensions.get('window').height;
+
+const imageWidth = screenWidth * 0.8;
+const imageHeight = screenHeight * (4 / 22);
+
   return (
     <View style={styles.container}>
       <View>
-        <Image
-          style={styles.logo}
-          source={require('../assets/Images/logo.png')}
-        />
+      {logoUrl && (
+        <Image source={{ uri: logoUrl }} resizeMode='contain' style={[styles.logo, { width: imageWidth, height: imageHeight }]} />
+      )}
         <View style={styles.textinputview}>
           <View>
             <View style={{position: 'absolute', top: 30, left: 12, zIndex: 1}}>

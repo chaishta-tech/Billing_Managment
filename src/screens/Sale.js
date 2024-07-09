@@ -1,30 +1,60 @@
-import {Pressable, StyleSheet, Text, View} from 'react-native';
-import React, {useState} from 'react';
-import {Picker} from '@react-native-picker/picker';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useState,useEffect } from 'react';
+import { Picker } from '@react-native-picker/picker';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import { Customer_Api } from '../api/authApi';
 
+const Sale = ({ navigation }) => {
+  const [customer, setCustomer] = useState([]);
+  const [selectedcustomer, setselectedcustomer] = useState('');
 
+  const onPressPlusButton = () => {
+    navigation.navigate('Add Invoice');
+  };
 
-const Sale = ({navigation}) => {
-  const [customer, setCustomer] = useState('');
+  useEffect(() => {
+    getCustomer();
+  }, []);
 
+  const getCustomer = async () => {
+    try {
+      const response = await Customer_Api();
+      console.log(response.data);
+      if (response.msg === 'Data loaded successfully.') {
+        setCustomer(response.data);
+      } else {
+        Toast.show({
+          text1: 'Failed to login!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.log('Login Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
+  };
 
-  
-    const onPressPlusButton = () => {
-      navigation.navigate('Add Invoice');
+  const handlecustomer = (itemValue, itemIndex) => {
+    setselectedcustomer(itemValue);
+  };
 
-    };
   return (
     <View style={styles.container}>
-    <View style={styles.pickerContainer}>
+      <View style={styles.pickerContainer}>
       <Picker
-        selectedValue={customer}
-        style={styles.picker}
-        onValueChange={(itemValue, itemIndex) => setCustomer(itemValue)}>
-        <Picker.Item label="Select Customer" value="" />
-      </Picker>
-    </View>
-    <View style={styles.plusButtonContainer}>
+            selectedValue={selectedcustomer}
+            style={styles.picker}
+            onValueChange={handlecustomer}>
+            <Picker.Item label="Select Customer" value="" />
+            {customer.map((src, index) => (
+              <Picker.Item key={index} label={src.name} value={src.id} />
+            ))}
+          </Picker>
+      </View>
+      <View style={styles.plusButtonContainer}>
         <Pressable style={styles.plusButton} onPress={onPressPlusButton}>
           <AntDesign name="plus" size={35} color="#dbdad3" />
         </Pressable>
@@ -36,8 +66,8 @@ const Sale = ({navigation}) => {
 export default Sale;
 
 const styles = StyleSheet.create({
-  container:{
-    flex:1
+  container: {
+    flex: 1
   },
   pickerContainer: {
     borderWidth: 1,
