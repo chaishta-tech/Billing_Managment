@@ -146,14 +146,14 @@ const Settingsscreen = ({ navigation }) => {
               <View></View>
               <Text style={styles.modalText}>Change Password</Text>
               <Pressable onPress={() => handleCloseModalpassword()} >
-                <MaterialCommunityIcons name="close-circle" size={25} color="#625bc5" />
+                <MaterialCommunityIcons name="close-circle" size={25} color="#385dab" />
               </Pressable>
             </View>
 
             <View style={{ flexDirection: 'column', width: '90%', justifyContent: 'space-between' }}>
               <View>
                 <View style={{ position: 'absolute', top: 15, left: 6, zIndex: 1 }}>
-                  <MaterialCommunityIcons name="lock" size={25} color="#625bc5" />
+                  <MaterialCommunityIcons name="lock" size={25} color="#385dab" />
                 </View>
                 <TextInput
                   placeholder="Enter Your Password"
@@ -163,8 +163,8 @@ const Settingsscreen = ({ navigation }) => {
                   style={[styles.textinput, { paddingLeft: 20 }]}
                 />
               </View>
-              <Pressable onPress={handleConfirmLogout} style={{ marginTop: 15 }}>
-                <Button text="Submit" />
+              <Pressable style={[styles.button1]} onPress={handleConfirmLogout} >
+                <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Submit</Text>
               </Pressable>
             </View>
           </View>
@@ -273,5 +273,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'center',
     width: '45%',
+  },
+  button1: {
+    backgroundColor: '#385dab',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 6,
+    alignItems: 'center',
+    alignSelf: 'center',
+    width: '89%',
+    top:20
   },
 });

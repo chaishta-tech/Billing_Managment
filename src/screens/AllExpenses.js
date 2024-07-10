@@ -3,35 +3,21 @@ import { Pressable, StyleSheet, Text, View, FlatList } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Get_Expense_Api } from '../api/authApi';
+import { useFocusEffect } from '@react-navigation/native';
 
 const AllExpenses = ({ navigation }) => {
 
   const[expensedata,setexpensedata]=useState([])
-  
-  const data = [
-    {
-      id: '1',
-      date: '2024-07-05',
-      time: '10:00 AM',
-      name: 'Water Bill',
-      category: 'Travel',
-      subCategory: 'Cab',
-      vendor: 'Vendor 1',
-      expensesType: 'Vendor',
-      note: 'anything',
-      buildStatus: 'Billed',
-      amount: '1500',
-    },
-
-  ];
 
   const onPressPlusButton = () => {
     navigation.navigate('Add Expenses');
   };
 
-  useEffect(() => {
-    getexpense();
-  }, [])
+  useFocusEffect(
+    React.useCallback(() => {
+      getexpense();
+    }, [])
+  );
   
   const getexpense = async () => {
     try {

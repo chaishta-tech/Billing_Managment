@@ -34,80 +34,77 @@ const Stacknavigation = () => {
           <Stack.Screen
             name="Add Expenses"
             component={AddExpenseForm}
-            options={{
-              headerStyle: {backgroundColor: '#385dab'},
-              headerTitleStyle: {color: '#fff', alignSelf: 'center'},
+            options={({ navigation }) => ({
+              headerStyle: { backgroundColor: '#385dab' },
+              headerTitleStyle: { color: '#fff', alignSelf: 'center' },
               headerTitleAlign: 'center',
               headerLeft: () => (
-                <TouchableOpacity onPress={() => {}}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                   <MaterialIcons name="arrow-back" size={26} color="#fff" />
                 </TouchableOpacity>
               ),
               headerShown: true,
-            }}
+            })}
           />
            <Stack.Screen
             name="Add Invoice"
             component={AddSale}
-            options={{
-              headerStyle: {backgroundColor: '#385dab'},
-              headerTitleStyle: {color: '#fff', alignSelf: 'center'},
+            options={({ navigation }) => ({
+              headerStyle: { backgroundColor: '#385dab' },
+              headerTitleStyle: { color: '#fff', alignSelf: 'center' },
               headerTitleAlign: 'center',
               headerLeft: () => (
-                <TouchableOpacity onPress={() => {}}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                   <MaterialIcons name="arrow-back" size={26} color="#fff" />
                 </TouchableOpacity>
               ),
               headerShown: true,
-            }}
+            })}
           />
-
-
 <Stack.Screen
             name="My Profile"
             component={Profilescreen}
-            options={{
-              headerStyle: {backgroundColor: '#385dab'},
-              headerTitleStyle: {color: '#fff', alignSelf: 'center'},
+            options={({ navigation }) => ({
+              headerStyle: { backgroundColor: '#385dab' },
+              headerTitleStyle: { color: '#fff', alignSelf: 'center' },
               headerTitleAlign: 'center',
               headerLeft: () => (
-                <TouchableOpacity onPress={() => {}}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                   <MaterialIcons name="arrow-back" size={26} color="#fff" />
                 </TouchableOpacity>
               ),
               headerShown: true,
-            }}
+            })}
           />
-
 <Stack.Screen
             name="Edit Expense"
             component={Editexpense}
-            options={{
-              headerStyle: {backgroundColor: '#385dab'},
-              headerTitleStyle: {color: '#fff', alignSelf: 'center'},
+            options={({ navigation }) => ({
+              headerStyle: { backgroundColor: '#385dab' },
+              headerTitleStyle: { color: '#fff', alignSelf: 'center' },
               headerTitleAlign: 'center',
               headerLeft: () => (
-                <TouchableOpacity onPress={() => {}}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                   <MaterialIcons name="arrow-back" size={26} color="#fff" />
                 </TouchableOpacity>
               ),
               headerShown: true,
-            }}
+            })}
           />
           <Stack.Screen
             name="Edit Invoice"
             component={Editinvoice}
-            options={{
-              headerStyle: {backgroundColor: '#385dab'},
-              headerTitleStyle: {color: '#fff', alignSelf: 'center'},
+            options={({ navigation }) => ({
+              headerStyle: { backgroundColor: '#385dab' },
+              headerTitleStyle: { color: '#fff', alignSelf: 'center' },
               headerTitleAlign: 'center',
               headerLeft: () => (
-                <TouchableOpacity onPress={() => {}}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                   <MaterialIcons name="arrow-back" size={26} color="#fff" />
                 </TouchableOpacity>
               ),
               headerShown: true,
-            }}
+            })}
           />
         </Stack.Navigator>
       </Provider>

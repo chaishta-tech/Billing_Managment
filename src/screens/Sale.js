@@ -5,6 +5,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Customer_Api, Get_Sales_Api } from '../api/authApi';
 import Toast from 'react-native-toast-message';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Sale = ({ navigation }) => {
   const [customer, setCustomer] = useState([]);
@@ -15,9 +16,11 @@ const Sale = ({ navigation }) => {
     navigation.navigate('Add Invoice');
   };
 
-  useEffect(() => {
-    getCustomer();
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      getCustomer();
+    }, [])
+  );
 
   const getCustomer = async () => {
     try {
