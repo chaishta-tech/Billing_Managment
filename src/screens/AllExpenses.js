@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View, FlatList } from 'react-native';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Get_Expense_Api } from '../api/authApi';
 
 const AllExpenses = ({ navigation }) => {
 
+  const[expensedata,setexpensedata]=useState([])
+  
   const data = [
     {
       id: '1',
@@ -26,48 +29,67 @@ const AllExpenses = ({ navigation }) => {
     navigation.navigate('Add Expenses');
   };
 
-  const Card = () => {
+  useEffect(() => {
+    getexpense();
+  }, [])
+  
+  const getexpense = async () => {
+    try {
+      const response = await Get_Expense_Api();
+      console.log(response.data)
+      if (response.msg === "Data loaded successfully.") {
+        setexpensedata(response.data)
+      } else {
+      }
+    } catch (error) {
+      console.log(error);
+
+    } finally {
+    }
+  };
+
+  const Card = ({item}) => {
     return (
       <View style={styles.card}>
-        <View style={styles.leftContent}>
-          <View style={styles.datetime}>
-            <Text>2024-07-05 18:28:00</Text>
-            <Text style={styles.cash}>Cash</Text>
+      <View style={styles.leftContent}>
+        <View style={styles.datetime}>
+          <Text>{item.expense_date}</Text>
+          <Text style={styles.cash}>{item.payment_mode}</Text>
+        </View>
+        <View style={styles.details}>
+          <View style={styles.icon}>
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={styles.detailText}>Name:</Text>
+              <Text style={styles.text1}> {item.name}</Text>
+            </View>
+            <View style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }}>
+              <MaterialCommunityIcons name="playlist-edit" size={26} color="black" />
+            </View>
+
           </View>
-          <View style={styles.details}>
-            <View style={styles.icon}>
-              <View style={{ flexDirection: 'row' }}>
-                <Text style={styles.detailText}>Name:</Text>
-                <Text style={styles.text1}> Water Bill</Text>
-              </View>
-              <View style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }}>
-                <MaterialCommunityIcons name="playlist-edit" size={26} color="black" />
-              </View>
 
-            </View>
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.detailText}>Category:</Text>
+            <Text style={styles.text1}> {item.expense_category}</Text>
+          </View>
 
+          <View style={{ flexDirection: 'row' }}>
+            <Text style={styles.detailText}>Vendor Name:</Text>
+            <Text style={styles.text1}> {item.vendor_name}</Text>
+          </View>
+
+          <View style={styles.icon}>
             <View style={{ flexDirection: 'row' }}>
-              <Text style={styles.detailText}>Category:</Text>
-              <Text style={styles.text1}> Travel</Text>
+              <Text style={styles.detailText}>Note:</Text>
+              <Text style={styles.text1}> {item.note}</Text>
             </View>
-
-            <View style={{ flexDirection: 'row' }}>
-              <Text style={styles.detailText}>Vendor Name:</Text>
-              <Text style={styles.text1}> Vendor 1</Text>
-            </View>
-
-            <View style={styles.icon}>
-              <View style={{ flexDirection: 'row' }}>
-                <Text style={styles.detailText}>Note:</Text>
-                <Text style={styles.text1}> anything</Text>
-              </View>
-              <View style={styles.rps}>
-                <Text style={styles.text}>1500</Text>
-              </View>
+            <View style={styles.rps}>
+              <Text style={styles.text}>{item.amount}</Text>
             </View>
           </View>
         </View>
       </View>
+    </View>
     );
   };
 
@@ -75,8 +97,8 @@ const AllExpenses = ({ navigation }) => {
     <View style={styles.container}>
       <View>
         <FlatList
-          data={data}
-          keyExtractor={(item) => item.id}
+          data={expensedata}
+          keyExtractor={item => item.id.toString()}
           renderItem={({ item }) => <Card item={item} />}
         />
       </View>

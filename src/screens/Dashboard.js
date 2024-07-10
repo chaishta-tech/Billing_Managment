@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, FlatList, StyleSheet, Linking, Image, Dimensions, Pressable, ScrollView } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Seting_Api, Dashboard_Api } from '../api/authApi';
+import { useFocusEffect } from '@react-navigation/native';
 
 const screenWidth = Dimensions.get('window').width;
 const screenHeight = Dimensions.get('window').height;
@@ -15,10 +16,12 @@ const Dashboard = ({ navigation }) => {
   const [salesData, setSalesData] = useState([]);
   const [expense, setexpense] = useState([]);
 
-  useEffect(() => {
-    getimage();
-    getdashboard()
-  }, [])
+  useFocusEffect(
+    React.useCallback(() => {
+      getimage();
+      getdashboard()
+    }, [])
+  );
 
   const getimage = async () => {
     try {
@@ -101,14 +104,14 @@ const Dashboard = ({ navigation }) => {
     <View style={styles.card}>
       <View style={styles.leftContent}>
         <View style={styles.datetime}>
-          <Text>2024-07-05 18:28:00</Text>
-          <Text style={styles.cash}>Cash</Text>
+          <Text>{item.expense_date}</Text>
+          <Text style={styles.cash}>{item.payment_mode}</Text>
         </View>
         <View style={styles.details}>
           <View style={styles.icon}>
             <View style={{ flexDirection: 'row' }}>
               <Text style={styles.detailText}>Name:</Text>
-              <Text style={styles.text1}> Water Bill</Text>
+              <Text style={styles.text1}> {item.name}</Text>
             </View>
             <View style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }}>
               <MaterialCommunityIcons name="playlist-edit" size={26} color="black" />
@@ -118,21 +121,21 @@ const Dashboard = ({ navigation }) => {
 
           <View style={{ flexDirection: 'row' }}>
             <Text style={styles.detailText}>Category:</Text>
-            <Text style={styles.text1}> Travel</Text>
+            <Text style={styles.text1}> {item.expense_category}</Text>
           </View>
 
           <View style={{ flexDirection: 'row' }}>
             <Text style={styles.detailText}>Vendor Name:</Text>
-            <Text style={styles.text1}> Vendor 1</Text>
+            <Text style={styles.text1}> {item.vendor_name}</Text>
           </View>
 
           <View style={styles.icon}>
             <View style={{ flexDirection: 'row' }}>
               <Text style={styles.detailText}>Note:</Text>
-              <Text style={styles.text1}> anything</Text>
+              <Text style={styles.text1}> {item.note}</Text>
             </View>
             <View style={styles.rps}>
-              <Text style={styles.text}>1500</Text>
+              <Text style={styles.text}>{item.amount}</Text>
             </View>
           </View>
         </View>

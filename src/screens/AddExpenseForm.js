@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -14,15 +14,15 @@ import {
   Platform,
 } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {TextInput} from 'react-native-paper';
-import {Picker} from '@react-native-picker/picker';
+import { TextInput } from 'react-native-paper';
+import { Picker } from '@react-native-picker/picker';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Button from '../components/Button';
-import {launchImageLibrary, launchCamera} from 'react-native-image-picker';
-import {useNavigation} from '@react-navigation/native';
+import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
+import { useNavigation } from '@react-navigation/native';
 import {
   Category_Api,
   Customer_Api,
@@ -31,6 +31,7 @@ import {
   Get_Expense_Sub__Category_Api,
   Get_Sale_Api,
   Get_Vendor_Labour_Api,
+  Add_Expense
 } from '../api/authApi';
 import Toast from 'react-native-toast-message';
 
@@ -56,7 +57,7 @@ export default function AddExpenseForm() {
   const [selectedSubCategory, setselectedSubCategory] = useState('');
   const [selectedSale, setselectedSale] = useState('');
   const [selectedExpenseType, setselectedExpenseType] = useState('');
-
+  const [reference, setreference] = useState('')
 
   useEffect(() => {
     requestCameraPermission();
@@ -94,7 +95,7 @@ export default function AddExpenseForm() {
     console.log(itemValue)
     setselectedExpenseType(itemValue);
   };
-  
+
   const getCustomer = async () => {
     try {
       const response = await Customer_Api();
@@ -116,10 +117,10 @@ export default function AddExpenseForm() {
     }
   };
 
-  const getVendor= async () => {
+  const getVendor = async () => {
     try {
       const response = await Vendor_Api();
-      console.log('vendor',response.data);
+      console.log('vendor', response.data);
       if (response.msg === 'Data loaded successfully.') {
         setSale(response.data);
       } else {
@@ -220,7 +221,7 @@ export default function AddExpenseForm() {
           text1: 'User login successful',
           type: 'success',
         });
-        
+
       } else {
         Toast.show({
           text1: 'Failed to login!',
@@ -246,7 +247,7 @@ export default function AddExpenseForm() {
           text1: 'User login successful',
           type: 'success',
         });
-        
+
       } else {
         Toast.show({
           text1: 'Failed to login!',
@@ -261,9 +262,50 @@ export default function AddExpenseForm() {
       });
     }
   };
-  const Submit = () => {
-    // navigation.navigate('All Expenses')
-    // navigation.goBack();
+
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const Submit = async () => {
+    try {
+      const response = await Add_Expense(
+        selectedcustomer,
+        amount,
+        selectedImage,
+        name,
+        selectedcategory,
+        formatDate(date),
+        billed,
+        note,
+        reference,
+        selectedSale,
+      );
+      console.log(response);
+  
+      if (response.msg === 'Save successfully.') {
+        Toast.show({
+          text1: 'Save successfully.',
+          type: 'success',
+        });
+        navigation.navigate('Expenses');
+      } else {
+        Toast.show({
+          text1: 'Failed to save!',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      console.error('API Request Error:', error);
+      Toast.show({
+        text1: 'Error',
+        type: 'error',
+      });
+    }
   };
 
   const onChangeDate = (event, selectedDate) => {
@@ -354,7 +396,7 @@ export default function AddExpenseForm() {
       <ScrollView>
         <TouchableOpacity onPress={chooseImage} style={styles.imagePicker}>
           {selectedImage ? (
-            <Image source={{uri: selectedImage}} style={styles.image} />
+            <Image source={{ uri: selectedImage }} style={styles.image} />
           ) : (
             <View style={styles.placeholder}>
               <FontAwesome name="file-picture-o" size={70} color="#37b8af" />
@@ -392,7 +434,7 @@ export default function AddExpenseForm() {
             ))}
           </Picker>
         </View>
-{/* 
+        {/* 
         <View style={styles.pickerContainer}>
           <Picker
             selectedValue={selectedSubCategory}
@@ -455,7 +497,7 @@ export default function AddExpenseForm() {
             onValueChange={handleSale}>
             <Picker.Item label="Select Vender" value="" />
             {sale.map((src, index) => (
-              <Picker.Item key={index} label={src.name} value={src.name} />
+              <Picker.Item key={index} label={src.name} value={src.id} />
             ))}
           </Picker>
         </View>
@@ -475,6 +517,9 @@ export default function AddExpenseForm() {
           label="Enter Reference Number"
           mode="outlined"
           style={styles.input}
+          value={reference}
+          onChangeText={setreference}
+          keyboardType='numeric'
         />
 
         <Button title="Submit" onPress={Submit} />
@@ -484,7 +529,7 @@ export default function AddExpenseForm() {
           transparent={true}
           visible={modalVisible}
           onRequestClose={handleCloseModalUpdate}>
-          <View style={[styles.centeredView, {justifyContent: 'flex-end'}]}>
+          <View style={[styles.centeredView, { justifyContent: 'flex-end' }]}>
             <View style={styles.modalView}>
               <View
                 style={{
@@ -521,7 +566,7 @@ export default function AddExpenseForm() {
                     color="#37b8af"
                   />
                   <Text
-                    style={{fontSize: 16, fontWeight: '700', color: '#666'}}>
+                    style={{ fontSize: 16, fontWeight: '700', color: '#666' }}>
                     Select Photo
                   </Text>
                 </Pressable>
@@ -534,7 +579,7 @@ export default function AddExpenseForm() {
                   onPress={openCamera}>
                   <MaterialIcons name="add-a-photo" size={27} color="#37b8af" />
                   <Text
-                    style={{fontSize: 16, fontWeight: '700', color: '#666'}}>
+                    style={{ fontSize: 16, fontWeight: '700', color: '#666' }}>
                     Open Camera
                   </Text>
                 </Pressable>
@@ -550,7 +595,7 @@ export default function AddExpenseForm() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor:'#fff',
+    backgroundColor: '#fff',
     // top:10
   },
   imagePicker: {
@@ -601,7 +646,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
     marginBottom: 10,
     color: '#000',
-    backgroundColor:'#fff'
+    backgroundColor: '#fff'
   },
   picker: {
     height: 50,
