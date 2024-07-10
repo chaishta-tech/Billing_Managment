@@ -13,7 +13,7 @@ import { Picker } from '@react-native-picker/picker';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Button from '../components/Button';
 import { NavigationContainer } from '@react-navigation/native';
-import { Get_Expense_Sub__Category_Api, Get_Expense_Category_Api, GST_Api, Customer_Api ,Add_Invoice} from '../api/authApi';
+import { sub_Category_Api, Category_Api, GST_Api, Customer_Api ,Add_Invoice} from '../api/authApi';
 import Toast from 'react-native-toast-message';
 
 export default function AddSale({ navigation }) {
@@ -132,7 +132,7 @@ export default function AddSale({ navigation }) {
 
   const getExpenseCategory = async () => {
     try {
-      const response = await Get_Expense_Category_Api();
+      const response = await Category_Api();
       console.log(response.data);
       if (response.msg === 'Data loaded successfully.') {
         setCategory(response.data);
@@ -174,7 +174,7 @@ export default function AddSale({ navigation }) {
 
   const getExpenseSubCategory = async itemValue => {
     try {
-      const response = await Get_Expense_Sub__Category_Api(itemValue);
+      const response = await sub_Category_Api(itemValue);
       console.log(response.data);
       if (response.msg === 'Data loaded successfully.') {
         setSubCategory(response.data);
@@ -230,7 +230,11 @@ export default function AddSale({ navigation }) {
       }
     };
     
-
+    const deleteItem = (indexToDelete) => {
+      const updatedItems = items.filter((item, index) => index !== indexToDelete);
+      setItems(updatedItems);
+    };
+      
   const addItem = () => {
     if (
       !selectedcategory ||
@@ -253,7 +257,7 @@ export default function AddSale({ navigation }) {
       (cat) => cat.id === selectedcategory
     );
     const selectedSubCategoryObject = subCategory.find(
-      (subCat) => subCat.name === selectedSubCategory
+      (subCat) => subCat.id === selectedSubCategory
     );
     const selectedGstObject = Gst.find((gst) => gst.gst === selectedgst);
   
@@ -272,14 +276,14 @@ export default function AddSale({ navigation }) {
   
     setItems([...items, newItem]);
   
-    setselectedcategory('');
-    setselectedSubCategory('');
-    setName('');
-    setQuantity('');
-    setPrice('');
-    setselectedgst('');
-    setgsttye('');
-    setcommision('');
+    // setselectedcategory('');
+    // setselectedSubCategory('');
+    // setName('');
+    // setQuantity('');
+    // setPrice('');
+    // setselectedgst('');
+    // setgsttye('');
+    // setcommision('');
   };
   
 
@@ -473,7 +477,9 @@ export default function AddSale({ navigation }) {
                     {item.prod_category}
                   </Text>
                 </View>
-                <Fontisto name="trash" size={20} color="#000" style={styles.icon} />
+                <TouchableOpacity onPress={() => deleteItem(index)}>
+          <Fontisto name="trash" size={20} color="#000" style={styles.icon} />
+        </TouchableOpacity>
               </View>
 
 
@@ -598,6 +604,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e8effa',
     padding: 10,
     borderRadius: 5,
+    marginBottom:5
   },
   itemContainer: {
     flexDirection: 'row',

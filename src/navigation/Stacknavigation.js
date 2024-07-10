@@ -12,6 +12,8 @@ import AllExpenses from '../screens/AllExpenses';
 import AddExpenseForm from '../screens/AddExpenseForm';
 import Sale from '../screens/Sale';
 import AddSale from '../screens/AddSale';
+import Editexpense from '../screens/Editexpense';
+import Editinvoice from '../screens/Editinvoice';
 const Stack = createNativeStackNavigator();
 
 const Stacknavigation = () => {
@@ -64,6 +66,37 @@ const Stacknavigation = () => {
 <Stack.Screen
             name="My Profile"
             component={Profilescreen}
+            options={{
+              headerStyle: {backgroundColor: '#385dab'},
+              headerTitleStyle: {color: '#fff', alignSelf: 'center'},
+              headerTitleAlign: 'center',
+              headerLeft: () => (
+                <TouchableOpacity onPress={() => {}}>
+                  <MaterialIcons name="arrow-back" size={26} color="#fff" />
+                </TouchableOpacity>
+              ),
+              headerShown: true,
+            }}
+          />
+
+<Stack.Screen
+            name="Edit Expense"
+            component={Editexpense}
+            options={{
+              headerStyle: {backgroundColor: '#385dab'},
+              headerTitleStyle: {color: '#fff', alignSelf: 'center'},
+              headerTitleAlign: 'center',
+              headerLeft: () => (
+                <TouchableOpacity onPress={() => {}}>
+                  <MaterialIcons name="arrow-back" size={26} color="#fff" />
+                </TouchableOpacity>
+              ),
+              headerShown: true,
+            }}
+          />
+          <Stack.Screen
+            name="Edit Invoice"
+            component={Editinvoice}
             options={{
               headerStyle: {backgroundColor: '#385dab'},
               headerTitleStyle: {color: '#fff', alignSelf: 'center'},

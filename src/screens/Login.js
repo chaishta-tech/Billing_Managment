@@ -42,8 +42,10 @@ const Login = ({navigation}) => {
       if (response.msg === 'User logged in successfully.') {
         await AsyncStorage.removeItem('authToken');
         await AsyncStorage.setItem('authToken', response.data.token);
-        await AsyncStorage.setItem('User_Password', response.data.password);
+        await AsyncStorage.setItem('email', response.data.email);
         await AsyncStorage.setItem('Username', response.data.username);
+        await AsyncStorage.setItem('mobile', response.data.mobile);
+        await AsyncStorage.setItem('address', response.data.address);
 
         Toast.show({
           text1: 'User login successful',
@@ -93,9 +95,11 @@ const imageHeight = screenHeight * (4 / 22);
   return (
     <View style={styles.container}>
       <View>
-      {logoUrl && (
+      {/* {logoUrl && (
         <Image source={{ uri: logoUrl }} resizeMode='contain' style={[styles.logo, { width: imageWidth, height: imageHeight }]} />
-      )}
+      )} */}
+
+      <Image  resizeMode='contain' style={[styles.logo, { width: imageWidth, height: imageHeight }]} source={require('../assets/Images/logo.png')}/>
         <View style={styles.textinputview}>
           <View>
             <View style={{position: 'absolute', top: 30, left: 12, zIndex: 1}}>

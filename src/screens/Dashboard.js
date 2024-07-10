@@ -72,7 +72,7 @@ const Dashboard = ({ navigation }) => {
           <Text style={styles.invoiceText1}>{item.invoice_date}</Text>
         </View>
         <View style={styles.rps}>
-          <Text style={styles.text}>{item.amt}</Text>
+          <Text style={styles.text}>₹{item.amt}</Text>
         </View>
       </View>
 
@@ -135,7 +135,7 @@ const Dashboard = ({ navigation }) => {
               <Text style={styles.text1}> {item.note}</Text>
             </View>
             <View style={styles.rps}>
-              <Text style={styles.text}>{item.amount}</Text>
+              <Text style={styles.text}>₹{item.amount}</Text>
             </View>
           </View>
         </View>

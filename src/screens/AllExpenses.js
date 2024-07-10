@@ -48,6 +48,10 @@ const AllExpenses = ({ navigation }) => {
     }
   };
 
+  const navigatescreen= (item)=>{
+    navigation.navigate('Edit Expense', { itemId: item.id })
+  }
+
   const Card = ({item}) => {
     return (
       <View style={styles.card}>
@@ -62,9 +66,9 @@ const AllExpenses = ({ navigation }) => {
               <Text style={styles.detailText}>Name:</Text>
               <Text style={styles.text1}> {item.name}</Text>
             </View>
-            <View style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }}>
+            <Pressable style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }} onPress={() => navigatescreen(item)}>
               <MaterialCommunityIcons name="playlist-edit" size={26} color="black" />
-            </View>
+            </Pressable>
 
           </View>
 
@@ -84,7 +88,7 @@ const AllExpenses = ({ navigation }) => {
               <Text style={styles.text1}> {item.note}</Text>
             </View>
             <View style={styles.rps}>
-              <Text style={styles.text}>{item.amount}</Text>
+              <Text style={styles.text}>₹{item.amount}</Text>
             </View>
           </View>
         </View>

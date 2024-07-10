@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, Pressable } from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import { TextInput } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TextInput } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import Button from '../components/Button';
 
 const Profilescreen = ({ navigation }) => {
@@ -11,88 +10,95 @@ const Profilescreen = ({ navigation }) => {
   const [mobilenumber, setMobilenumber] = useState('');
   const [address, setAddress] = useState('');
 
-  const Submit = () => {
-    console.log("Full Name:", fullname);
-    console.log("Email:", mail);
-    console.log("Mobile Number:", mobilenumber);
-    console.log("Address:", address);
-    navigation.navigate('Setting')
-  };
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const email = await AsyncStorage.getItem('email');
+        const username = await AsyncStorage.getItem('Username');
+        const mobile = await AsyncStorage.getItem('mobile');
+        const userAddress = await AsyncStorage.getItem('address');
 
+        if (email && username && mobile && userAddress) {
+          setMail(email);
+          setFullname(username);
+          setMobilenumber(mobile);
+          setAddress(userAddress);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []); 
+
+  const Submit = () => {
+    navigation.navigate('Setting');
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.bottom}>
-
-        <View style={{padding:10}}>
-
-      
-        <View>
-          <Text>Full Name</Text>
+        <View style={{ padding: 10 }}>
           <View>
-            <View style={{ position: 'absolute', top: 25, left: 6, zIndex: 1 }}>
+            <Text style={styles.label}>Full Name</Text>
+            <View style={{ position: 'absolute', top: 37, left: 6, zIndex: 1 }}>
               <MaterialIcons name="person" size={25} color="#625bc5" />
             </View>
             <TextInput
               label="Full Name"
               value={fullname}
               onChangeText={text => setFullname(text)}
-              style={[styles.textinput, { paddingLeft: 20 }]}
+              style={[styles.textinput, { paddingLeft: 33 }]}
               mode="outlined"
             />
           </View>
-        </View>
 
-        <View style={{ marginTop: 10 }}>
-          <Text>Email</Text>
-          <View>
-            <View style={{ position: 'absolute', top: 25, left: 6, zIndex: 1 }}>
+          <View style={{ marginTop: 10 }}>
+            <Text style={styles.label}>Email</Text>
+            <View style={{ position: 'absolute', top: 37, left: 6, zIndex: 1 }}>
               <MaterialIcons name="email" size={25} color="#625bc5" />
             </View>
             <TextInput
               label="Email"
               value={mail}
               onChangeText={text => setMail(text)}
-              style={[styles.textinput, { paddingLeft: 20 }]}
+              style={[styles.textinput, { paddingLeft: 35 }]}
               mode="outlined"
             />
           </View>
-        </View>
 
-        <View style={{ marginTop: 10 }}>
-          <Text>Mobile Number</Text>
-          <View>
-            <View style={{ position: 'absolute', top: 25, left: 6, zIndex: 1 }}>
+          <View style={{ marginTop: 10 }}>
+            <Text style={styles.label}>Mobile Number</Text>
+            <View style={{ position: 'absolute', top: 37, left: 6, zIndex: 1 }}>
               <MaterialIcons name="phone" size={25} color="#625bc5" />
             </View>
             <TextInput
               label="Mobile Number"
               value={mobilenumber}
               onChangeText={text => setMobilenumber(text)}
-              style={[styles.textinput, { paddingLeft: 20 }]}
+              style={[styles.textinput, { paddingLeft: 35 }]}
               mode="outlined"
               maxLength={10}
               keyboardType='numeric'
             />
           </View>
-        </View>
 
-        <View style={{ marginTop: 10, marginBottom: 20 }}>
-          <Text>Address</Text>
-          <View>
-            <View style={{ position: 'absolute', top: 25, left: 6, zIndex: 1 }}>
+          <View style={{ marginTop: 10, marginBottom: 20 }}>
+            <Text style={styles.label}>Address</Text>
+            <View style={{ position: 'absolute', top: 37, left: 6, zIndex: 1 }}>
               <MaterialIcons name="person" size={25} color="#625bc5" />
             </View>
             <TextInput
               label="Address"
               value={address}
               onChangeText={text => setAddress(text)}
-              style={[styles.textinput, { paddingLeft: 20 }]}
+              style={[styles.textinput, { paddingLeft: 35 }]}
               mode="outlined"
             />
           </View>
-        </View>
-        <Button title="Submit"  onPress={Submit}/>
+
+          <Button title="Submit" onPress={Submit} />
         </View>
       </View>
     </View>
@@ -108,9 +114,9 @@ const styles = StyleSheet.create({
   },
   bottom: {
     margin: 10,
-    backgroundColor:'#e6e8eb',
-    height:'96%',
-    borderRadius:5,
+    backgroundColor: '#e6e8eb',
+    height: '96%',
+    borderRadius: 5,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -123,5 +129,12 @@ const styles = StyleSheet.create({
   textinput: {
     height: 50,
     width: '100%',
+    backgroundColor: '#fff',
+  },
+  label: {
+    marginLeft: 10,
+    marginBottom: 5,
+    color: '#000',
+    fontSize: 16,
   },
 });

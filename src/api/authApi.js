@@ -156,6 +156,44 @@ export const Category_Api = async () => {
   }
 };
 
+export const sub_Category_Api = async (id) => {
+  try {
+    const token = await AsyncStorage.getItem('authToken');
+    console.log('Token:', token);
+
+    if (!token) {
+      throw new Error('Token not found');
+    }
+
+    const myHeaders = new Headers();
+    myHeaders.append("token", token);
+    
+    const formdata = new FormData();
+    formdata.append("category_id", id);
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      redirect: "follow",
+      body: formdata,
+    };
+
+    const response = await fetch(`${base_url}get-sub-category`, requestOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Network response was not ok: ${response.statusText} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    return result;
+
+  } catch (error) {
+    console.error('API Request Error:', error);
+    throw error;
+  }
+};
+
 export const Customer_Api = async () => {
   try {
     const token = await AsyncStorage.getItem('authToken');
@@ -565,6 +603,98 @@ export const Get_Expense_Api = async () => {
     const result = await response.json();
     return result;
 
+  } catch (error) {
+    console.error('API Request Error:', error);
+    throw error;
+  }
+};
+
+export const Get_Sales_Details_Api = async (id) => {
+  try {
+    const token = await AsyncStorage.getItem('authToken');
+    console.log('Token:', token);
+
+    if (!token) {
+      throw new Error('Token not found');
+    }
+
+    const myHeaders = new Headers();
+    myHeaders.append('token', token);
+
+    const formdata = new FormData();
+    formdata.append("sale_id", id);
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      redirect: 'follow',
+      body: formdata,
+    };
+
+    const response = await fetch(
+      `${base_url}get-sale-details`,
+      requestOptions,
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Network response was not ok: ${response.statusText} - ${errorText}`,
+      );
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('API Request Error:', error);
+    throw error;
+  }
+};
+
+export const Update_Invoice = async (customerid, prodlist, duedate, tax, invoicedate, gsttype,id) => {
+  try {
+    const token = await AsyncStorage.getItem('authToken');
+    console.log('Token:', token);
+
+    if (!token) {
+      throw new Error('Token not found');
+    }
+
+    const myHeaders = new Headers();
+    myHeaders.append('token', token);
+
+    const formdata = new FormData();
+    formdata.append("customer_id", customerid);
+    formdata.append("prod_list", JSON.stringify(prodlist));
+    formdata.append("due_date", duedate);
+    formdata.append("service_tax", tax);
+    formdata.append("invoice_date", invoicedate);
+    formdata.append("gst_type_mst", gsttype);
+    formdata.append("id", id);
+
+    console.log(formdata)
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      redirect: 'follow',
+      body: formdata,
+    };
+
+    const response = await fetch(
+      `${base_url}add-sale`,
+      requestOptions,
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Network response was not ok: ${response.statusText} - ${errorText}`,
+      );
+    }
+
+    const result = await response.json();
+    return result;
   } catch (error) {
     console.error('API Request Error:', error);
     throw error;

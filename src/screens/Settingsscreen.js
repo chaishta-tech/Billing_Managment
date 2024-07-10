@@ -1,22 +1,39 @@
-import React, { useState,useEffect } from 'react';
-import { StyleSheet, Text, View, Image, Modal ,Pressable} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, Image, Modal, Pressable } from 'react-native';
 import Button from '../components/Button';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TextInput } from 'react-native-paper';
-import Toast from 'react-native-toast-message';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-// import { profileapi ,changepasswordapi} from '../Service/Apis';
-// import { Colors } from '../Comman/Styles';
-// import Header from '../Component/Header';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
-const Settingsscreen = ({navigation}) => {
+const Settingsscreen = ({ navigation }) => {
   const [showModal, setShowModal] = useState(false);
   const [passwordmodal, setpasswordmodal] = useState(false);
-const [password,setpassword]=useState();
-const[data,setdata]=useState('');
+  const [password, setpassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [mobile, setMobile] = useState('');
 
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const storedUsername = await AsyncStorage.getItem('Username');
+        const storedEmail = await AsyncStorage.getItem('email');
+        const storedMobile = await AsyncStorage.getItem('mobile');
+
+        if (storedUsername && storedEmail && storedMobile) {
+          setUsername(storedUsername);
+          setEmail(storedEmail);
+          setMobile(storedMobile);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []); 
 
   const handleLogout = () => {
     setShowModal(true);
@@ -26,32 +43,40 @@ const[data,setdata]=useState('');
     setpasswordmodal(true);
   };
 
-
-
   const handleCloseModal = () => {
     setShowModal(false);
   };
 
-  const handleCloseModalpassword=()=>{
+  const handleCloseModalpassword = () => {
     setpasswordmodal(false)
   }
 
-  const Profile=()=>{
-    navigation.navigate('My Profile'); 
+  const Profile = () => {
+    navigation.navigate('My Profile');
   }
 
+  const navigatescreen = () => {
+    navigation.navigate('Login');
+  }
+
+  const handleConfirmLogout = () => {
+    // Handle logout logic here
+    setShowModal(false);
+    navigatescreen(); // Navigate to login screen
+  };
+
   return (
-    <View style={styles.container}>      
-      <Pressable style={styles.profileContainer}  onPress={Profile} >
+    <View style={styles.container}>
+      <Pressable style={styles.profileContainer} onPress={Profile} >
 
         <View style={styles.imagecontent}>
-        <Image
-          style={styles.profileImage} source={require('../assets/Images/baki.jpg')}/>
-        <View style={styles.profileInfo}>
-          <Text style={styles.infoText}>Gaurav Semwal</Text>
-          <Text style={styles.infoText}>9090909090</Text>
-          <Text style={styles.infoText}>gaurav@clikzopinnovations.com</Text>
-        </View>
+          <Image
+            style={styles.profileImage} source={require('../assets/Images/baki.jpg')} />
+          <View style={styles.profileInfo}>
+            <Text style={styles.infoText}>{username}</Text>
+            <Text style={styles.infoText}>{mobile}</Text>
+            <Text style={styles.infoText}>{email}</Text>
+          </View>
         </View>
       </Pressable>
 
@@ -93,16 +118,16 @@ const[data,setdata]=useState('');
         visible={showModal}
         onRequestClose={() => handleCloseModal()}
       >
-        <View style={[styles.centeredView,{ justifyContent: 'center',padding:10}]}>
+        <View style={[styles.centeredView, { justifyContent: 'center', padding: 10 }]}>
           <View style={styles.modalView}>
             <Text style={styles.modalText}>Are you sure you want to logout?</Text>
             <View style={{ flexDirection: 'row', marginTop: 20 }}>
-            <Pressable style={{width:'40%'}} onPress={() => handleCloseModal()} >
-              <Button text="Cancel" />
-                </Pressable>
-                <Pressable style={{width:'40%'}} onPress={() => handleConfirmLogout()} >
-              <Button text="Logout" />
-                </Pressable>
+              <Pressable style={[styles.button,{marginRight:10}]} onPress={() => handleCloseModal()}>
+                <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Cancel</Text>
+              </Pressable>
+              <Pressable style={[styles.button]} onPress={handleConfirmLogout}>
+                <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Logout</Text>
+              </Pressable>
             </View>
           </View>
         </View>
@@ -115,32 +140,32 @@ const[data,setdata]=useState('');
         visible={passwordmodal}
         onRequestClose={() => handleCloseModalpassword()}
       >
-        <View style={[styles.centeredView,{ justifyContent: 'flex-end'}]}>
+        <View style={[styles.centeredView, { justifyContent: 'flex-end' }]}>
           <View style={styles.modalView1}>
-            <View style={{flexDirection:'row',justifyContent:'space-between',width:'100%'}}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%' }}>
               <View></View>
-            <Text style={styles.modalText}>Change Password</Text>
-            <Pressable onPress={() => handleCloseModalpassword()} >
-            <MaterialCommunityIcons name="close-circle" size={25} color="#625bc5" />
-            </Pressable>
+              <Text style={styles.modalText}>Change Password</Text>
+              <Pressable onPress={() => handleCloseModalpassword()} >
+                <MaterialCommunityIcons name="close-circle" size={25} color="#625bc5" />
+              </Pressable>
             </View>
-          
-            <View style={{ flexDirection: 'column',width:'90%' ,justifyContent:'space-between'}}>
-            <View>
-            <View style={{ position: 'absolute', top: 15, left: 6, zIndex: 1 }}>
-              <MaterialCommunityIcons name="lock" size={25} color="#625bc5" />
-            </View>
-            <TextInput
-              placeholder="Enter Your Password"
-              value={password}
-              mode="outlined"
-              onChangeText={setpassword}
-              style={[styles.textinput, { paddingLeft: 20 }]}
-            />
-          </View>
-                <Pressable onPress={() => handleConfirmLogout()} style={{marginTop:15}}>
-              <Button text="Submit" />
-                </Pressable>
+
+            <View style={{ flexDirection: 'column', width: '90%', justifyContent: 'space-between' }}>
+              <View>
+                <View style={{ position: 'absolute', top: 15, left: 6, zIndex: 1 }}>
+                  <MaterialCommunityIcons name="lock" size={25} color="#625bc5" />
+                </View>
+                <TextInput
+                  placeholder="Enter Your Password"
+                  value={password}
+                  mode="outlined"
+                  onChangeText={setpassword}
+                  style={[styles.textinput, { paddingLeft: 20 }]}
+                />
+              </View>
+              <Pressable onPress={handleConfirmLogout} style={{ marginTop: 15 }}>
+                <Button text="Submit" />
+              </Pressable>
             </View>
           </View>
         </View>
@@ -170,10 +195,10 @@ const styles = StyleSheet.create({
     shadowRadius: 3.84,
     elevation: 5,
   },
-  imagecontent:{
+  imagecontent: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding:10,
+    padding: 10,
   },
   profileImage: {
     height: 100,
@@ -225,7 +250,7 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     elevation: 5,
-    height:'25%'
+    height: '25%'
   },
   modalView1: {
     backgroundColor: '#fff',
@@ -233,11 +258,20 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
     elevation: 5,
-    height:'34%'
+    height: '34%'
   },
   modalText: {
     fontSize: 18,
     marginBottom: 20,
     textAlign: 'center',
+  },
+  button: {
+    backgroundColor: '#385dab',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 6,
+    alignItems: 'center',
+    alignSelf: 'center',
+    width: '45%',
   },
 });

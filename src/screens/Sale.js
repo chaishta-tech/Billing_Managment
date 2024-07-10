@@ -66,6 +66,10 @@ const Sale = ({ navigation }) => {
     getInvoice(itemValue);
   };
 
+  const navigateedit=(item)=>{
+    navigation.navigate('Edit Invoice',{ itemId: item.id })
+  }
+
   const renderItem = ({ item }) => (
     <View style={styles.invoiceItem}>
       <View style={styles.contentbottom}>
@@ -82,7 +86,7 @@ const Sale = ({ navigation }) => {
           <Text style={styles.invoiceText1}>{item.invoice_date}</Text>
         </View>
         <View style={styles.rps}>
-          <Text style={styles.text}>{item.amt}</Text>
+          <Text style={styles.text}>₹{item.amt}</Text>
         </View>
       </View>
   
@@ -93,7 +97,7 @@ const Sale = ({ navigation }) => {
         </View>
         <Pressable
           style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }}
-          onPress={() => Linking.openURL(item.admin_copy)}>
+          onPress={() => navigateedit(item)}>
           <MaterialCommunityIcons name="playlist-edit" size={26} color="black" />
         </Pressable>
       </View>
@@ -210,9 +214,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginVertical: 4,
   },
-  rps: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    rps: {
+      backgroundColor: '#385dab',
+      padding: 5,
+      borderRadius: 5
   },
   text: {
     fontWeight: 'bold',
@@ -237,5 +242,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: 'black'
+  },
+  text: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '700'
   }
 });
