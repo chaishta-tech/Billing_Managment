@@ -24,14 +24,11 @@ import Button from '../components/Button';
 import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import {
-  Category_Api,
+  Get_Expense_Detail_Api,
   Customer_Api,
   Vendor_Api,
   Get_Expense_Category_Api,
-  Get_Expense_Sub__Category_Api,
-  Get_Sale_Api,
-  Get_Vendor_Labour_Api,
-  Add_Expense
+  update_Expense,
 } from '../api/authApi';
 import Toast from 'react-native-toast-message';
 import { useRoute } from '@react-navigation/native';
@@ -72,8 +69,8 @@ console.log(itemId)
     useEffect(() => {
       getCategory();
       getCustomer();
-      getExpenseType();
       getVendor();
+      getexpensedetails();
     }, []);
   
     const handlecustomer = (itemValue, itemIndex) => {
@@ -86,7 +83,6 @@ console.log(itemId)
     const handleExpenseCategory = (itemValue, itemIndex) => {
       console.log(itemValue);
       setselectedcategory(itemValue);
-      getExpenseSubCategory(itemValue);
     };
     const handleExpenseSubCategory = (itemValue, itemIndex) => {
       setselectedSubCategory(itemValue);
@@ -143,117 +139,36 @@ console.log(itemId)
         });
       }
     };
-  
-    const getCategory = async () => {
+
+    const getexpensedetails = async () => {
       try {
-        const response = await Category_Api();
-        console.log(response.data);
+        const response = await Get_Expense_Detail_Api(itemId);
+        console.log('expenseeee', response.data);
         if (response.msg === 'Data loaded successfully.') {
-          setCategory(response.data);
+          const expenseData = response.data[0]; 
+          console.log(expenseData.file)
+          setAmount(expenseData.amount);
+          setName(expenseData.name);
+          setNote(expenseData.note);
+          setselectedcategory(expenseData.expense_category);
+          setSelectedImage(expenseData.file);
+          setselectedcustomer(expenseData.customer_name);
+          setselectedSale(expenseData.vendor_id);
+          setreference(expenseData.ref_no);
         } else {
-          Toast.show({
-            text1: 'Failed to login!',
-            type: 'error',
-          });
         }
       } catch (error) {
-        console.log('Login Error:', error);
-        Toast.show({
-          text1: 'Error',
-          type: 'error',
-        });
+        console.log('Error fetching expense details:', error);
       }
     };
+    
   
-    const getExpenseCategory = async () => {
+    const getCategory = async () => {
       try {
         const response = await Get_Expense_Category_Api();
         console.log(response.data);
         if (response.msg === 'Data loaded successfully.') {
           setCategory(response.data);
-          Toast.show({
-            text1: 'User login successful',
-            type: 'success',
-          });
-          // navigation.navigate('Bottom');
-        } else {
-          Toast.show({
-            text1: 'Failed to login!',
-            type: 'error',
-          });
-        }
-      } catch (error) {
-        console.log('Login Error:', error);
-        Toast.show({
-          text1: 'Error',
-          type: 'error',
-        });
-      }
-    };
-  
-    const getExpenseSubCategory = async itemValue => {
-      try {
-        const response = await Get_Expense_Sub__Category_Api(itemValue);
-        console.log(response.data);
-        if (response.msg === 'Data loaded successfully.') {
-          setSubCategory(response.data);
-          Toast.show({
-            text1: 'User login successful',
-            type: 'success',
-          });
-          // navigation.navigate('Bottom');
-        } else {
-          Toast.show({
-            text1: 'Failed to login!',
-            type: 'error',
-          });
-        }
-      } catch (error) {
-        console.log('Login Error:', error);
-        Toast.show({
-          text1: 'Error',
-          type: 'error',
-        });
-      }
-    };
-  
-    const getSale = async itemValue => {
-      try {
-        const response = await Get_Sale_Api(itemValue);
-        console.log(response.data);
-        if (response.msg === 'Data loaded successfully.') {
-          setSale(response.data);
-          Toast.show({
-            text1: 'User login successful',
-            type: 'success',
-          });
-  
-        } else {
-          Toast.show({
-            text1: 'Failed to login!',
-            type: 'error',
-          });
-        }
-      } catch (error) {
-        console.log('Login Error:', error);
-        Toast.show({
-          text1: 'Error',
-          type: 'error',
-        });
-      }
-    };
-  
-    const getExpenseType = async itemValue => {
-      try {
-        const response = await Get_Vendor_Labour_Api(itemValue);
-        console.log(response.data);
-        if (response.msg === 'Data loaded successfully.') {
-          setExpenseType(response.data);
-          Toast.show({
-            text1: 'User login successful',
-            type: 'success',
-          });
-  
         } else {
           Toast.show({
             text1: 'Failed to login!',
@@ -281,7 +196,7 @@ console.log(itemId)
   
     const Submit = async () => {
       try {
-        const response = await Add_Expense(
+        const response = await update_Expense(
           selectedcustomer,
           amount,
           selectedImage,
@@ -292,6 +207,7 @@ console.log(itemId)
           note,
           reference,
           selectedSale,
+          itemId
         );
         console.log(response);
     
@@ -493,7 +409,7 @@ console.log(itemId)
               onValueChange={handlecustomer}>
               <Picker.Item label="Select Customer" value="" />
               {customer.map((src, index) => (
-                <Picker.Item key={index} label={src.name} value={src.id} />
+                <Picker.Item key={index} label={src.name} value={src.name} />
               ))}
             </Picker>
           </View>

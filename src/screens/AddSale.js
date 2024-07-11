@@ -276,14 +276,14 @@ export default function AddSale({ navigation }) {
   
     setItems([...items, newItem]);
   
-    // setselectedcategory('');
-    // setselectedSubCategory('');
-    // setName('');
-    // setQuantity('');
-    // setPrice('');
-    // setselectedgst('');
-    // setgsttye('');
-    // setcommision('');
+    setselectedcategory('');
+    setselectedSubCategory('');
+    setName('');
+    setQuantity('');
+    setPrice('');
+    setselectedgst('');
+    setgsttye('');
+    setcommision('');
   };
   
 

@@ -66,7 +66,6 @@ export default function AddExpenseForm() {
   useEffect(() => {
     getCategory();
     getCustomer();
-    getExpenseType();
     getVendor();
   }, []);
 
@@ -159,32 +158,6 @@ export default function AddExpenseForm() {
     }
   };
 
-  const getExpenseCategory = async () => {
-    try {
-      const response = await Get_Expense_Category_Api();
-      console.log(response.data);
-      if (response.msg === 'Data loaded successfully.') {
-        setCategory(response.data);
-        Toast.show({
-          text1: 'User login successful',
-          type: 'success',
-        });
-        // navigation.navigate('Bottom');
-      } else {
-        Toast.show({
-          text1: 'Failed to login!',
-          type: 'error',
-        });
-      }
-    } catch (error) {
-      console.log('Login Error:', error);
-      Toast.show({
-        text1: 'Error',
-        type: 'error',
-      });
-    }
-  };
-
   const getExpenseSubCategory = async itemValue => {
     try {
       const response = await Get_Expense_Sub__Category_Api(itemValue);
@@ -217,32 +190,6 @@ export default function AddExpenseForm() {
       console.log(response.data);
       if (response.msg === 'Data loaded successfully.') {
         setSale(response.data);
-        Toast.show({
-          text1: 'User login successful',
-          type: 'success',
-        });
-
-      } else {
-        Toast.show({
-          text1: 'Failed to login!',
-          type: 'error',
-        });
-      }
-    } catch (error) {
-      console.log('Login Error:', error);
-      Toast.show({
-        text1: 'Error',
-        type: 'error',
-      });
-    }
-  };
-
-  const getExpenseType = async itemValue => {
-    try {
-      const response = await Get_Vendor_Labour_Api(itemValue);
-      console.log(response.data);
-      if (response.msg === 'Data loaded successfully.') {
-        setExpenseType(response.data);
         Toast.show({
           text1: 'User login successful',
           type: 'success',
@@ -507,9 +454,9 @@ export default function AddExpenseForm() {
             selectedValue={billed}
             style={styles.picker}
             onValueChange={(itemValue, itemIndex) => setBilled(itemValue)}>
-            <Picker.Item label="Bank Transfer" value="" />
-            <Picker.Item label="Cheque" value="billed" />
-            <Picker.Item label="Cash" value="not_billed" />
+            <Picker.Item label="Bank Transfer" value="Bank Transfer" />
+            <Picker.Item label="Cheque" value="Cheque" />
+            <Picker.Item label="Cash" value="Cash" />
           </Picker>
         </View>
 

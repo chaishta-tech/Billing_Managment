@@ -530,11 +530,15 @@ export const Add_Expense = async (
     const formdata = new FormData();
     formdata.append('customer_id', customerid);
     formdata.append('amount', amount);
-    formdata.append('file', {
-      uri: fileUri,
-      type: 'image/jpeg',
-      name: 'file.jpg',
-    });
+    
+    if (fileUri) {
+      formdata.append('file', {
+        uri: fileUri,
+        type: 'image/jpeg',
+        name: 'file.jpg',
+      });
+    }
+
     formdata.append('name', name);
     formdata.append('expense_category', category);
     formdata.append('expense_date', date);
@@ -546,6 +550,7 @@ export const Add_Expense = async (
     formdata.append('invoice_id', '');
     formdata.append('trans_id', '');
 
+    console.log(formdata)
     const requestOptions = {
       method: 'POST',
       headers: myHeaders,
@@ -573,6 +578,77 @@ export const Add_Expense = async (
   }
 };
 
+
+export const update_Expense = async (
+  customerid,
+  amount,
+  fileUri,
+  name,
+  category,
+  date,
+  payment,
+  note,
+  refno,
+  vendor,
+  id
+) => {
+  try {
+    const token = await AsyncStorage.getItem('authToken');
+    if (!token) {
+      throw new Error('Token not found');
+    }
+
+    const myHeaders = new Headers();
+    myHeaders.append('token', token);
+
+    const formdata = new FormData();
+    formdata.append('customer_id', customerid);
+    formdata.append('amount', amount);
+    formdata.append('file', {
+      uri: fileUri,
+      type: 'image/jpeg',
+      name: 'file.jpg',
+    });
+    formdata.append('name', name);
+    formdata.append('expense_category', category);
+    formdata.append('expense_date', date);
+    formdata.append('payment_mode', payment);
+    formdata.append('note', note);
+    formdata.append('ref_no', refno);
+    formdata.append('vendor_id', vendor);
+    formdata.append('expense_type', '');
+    formdata.append('invoice_id', '');
+    formdata.append('trans_id', '');
+    formdata.append('id', id);
+
+    console.log(formdata)
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: formdata,
+      redirect: 'follow',
+    };
+
+    const response = await fetch(
+      'https://billing-expertz.clikzopdevp.com/api/add-expense',
+      requestOptions,
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Network response was not ok: ${response.statusText} - ${errorText}`,
+      );
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('API Request Error:', error);
+    throw error;
+  }
+};
 
 export const Get_Expense_Api = async () => {
   try {
@@ -700,3 +776,43 @@ export const Update_Invoice = async (customerid, prodlist, duedate, tax, invoice
     throw error;
   }
 };
+
+export const Get_Expense_Detail_Api = async (id) => {
+  try {
+    const token = await AsyncStorage.getItem('authToken');
+    console.log('Token:', token);
+
+    if (!token) {
+      throw new Error('Token not found');
+    }
+
+    const myHeaders = new Headers();
+    myHeaders.append("token", token);
+
+    const formdata = new FormData();
+    formdata.append("id", id);
+
+    const requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      redirect: "follow",
+      body: formdata,
+    };
+
+    const response = await fetch(`${base_url}get-expense-details`, requestOptions);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Network response was not ok: ${response.statusText} - ${errorText}`);
+    }
+
+    const result = await response.json();
+    return result;
+
+  } catch (error) {
+    console.error('API Request Error:', error);
+    throw error;
+  }
+};
+
+
