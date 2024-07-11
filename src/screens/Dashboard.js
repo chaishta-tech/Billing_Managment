@@ -41,18 +41,18 @@ const Dashboard = ({ navigation }) => {
   const getdashboard = async () => {
     try {
       const response = await Dashboard_Api();
-      console.log(response.data)
+      console.log(response.data);
+      
       if (response.msg === "Data loaded successfully.") {
         setDashboardData(response.data);
         setSalesData(response.data.sales);
-        setexpense(response.data.expenses)
+        setexpense(response.data.expenses);
+      } else if (response.msg === "Unauthorized request.") {
+        navigation.navigate('Login')
       } else {
-
       }
     } catch (error) {
       console.log(error);
-
-    } finally {
     }
   };
 

@@ -140,7 +140,7 @@ export default function AddExpenseForm() {
 
   const getCategory = async () => {
     try {
-      const response = await Category_Api();
+      const response = await Get_Expense_Category_Api();
       console.log(response.data);
       if (response.msg === 'Data loaded successfully.') {
         setCategory(response.data);

@@ -123,10 +123,10 @@ const Settingsscreen = ({ navigation }) => {
             <Text style={styles.modalText}>Are you sure you want to logout?</Text>
             <View style={{ flexDirection: 'row', marginTop: 20 }}>
               <Pressable style={[styles.button,{marginRight:10}]} onPress={() => handleCloseModal()}>
-                <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Cancel</Text>
+                <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>No</Text>
               </Pressable>
               <Pressable style={[styles.button]} onPress={handleConfirmLogout}>
-                <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Logout</Text>
+                <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Yes</Text>
               </Pressable>
             </View>
           </View>

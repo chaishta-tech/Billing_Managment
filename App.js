@@ -1,14 +1,13 @@
 import React from 'react';
 import {StyleSheet, View} from 'react-native';
-import Card from './src/components/Card';
 import Stacknavigation from './src/navigation/Stacknavigation';
-import Profilescreen from './src/screens/Profilescreen';
-import AddSale from './src/screens/AddSale';
+import Toast from 'react-native-toast-message';
 
 const App = () => {
   return (
     <View style={styles.container}>
       <Stacknavigation />
+      <Toast/>
     </View>
   );
 };
