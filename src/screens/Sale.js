@@ -30,7 +30,7 @@ const Sale = ({ navigation }) => {
         setCustomer(response.data);
       } else {
         Toast.show({
-          text1: 'Failed to load customers!',
+          text1: response.msg,
           type: 'error',
         });
       }
@@ -51,7 +51,7 @@ const Sale = ({ navigation }) => {
         setSalesData(response.data);
       } else {
         Toast.show({
-          text1: 'Failed to load invoices!',
+          text1: response.msg,
           type: 'error',
         });
       }

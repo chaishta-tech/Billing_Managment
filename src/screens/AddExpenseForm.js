@@ -102,10 +102,6 @@ export default function AddExpenseForm() {
       if (response.msg === 'Data loaded successfully.') {
         setCustomer(response.data);
       } else {
-        Toast.show({
-          text1: 'Failed to login!',
-          type: 'error',
-        });
       }
     } catch (error) {
       console.log('Login Error:', error);
@@ -123,10 +119,6 @@ export default function AddExpenseForm() {
       if (response.msg === 'Data loaded successfully.') {
         setSale(response.data);
       } else {
-        Toast.show({
-          text1: 'Failed to login!',
-          type: 'error',
-        });
       }
     } catch (error) {
       console.log('Login Error:', error);
@@ -144,10 +136,6 @@ export default function AddExpenseForm() {
       if (response.msg === 'Data loaded successfully.') {
         setCategory(response.data);
       } else {
-        Toast.show({
-          text1: 'Failed to login!',
-          type: 'error',
-        });
       }
     } catch (error) {
       console.log('Login Error:', error);
@@ -164,16 +152,8 @@ export default function AddExpenseForm() {
       console.log(response.data);
       if (response.msg === 'Data loaded successfully.') {
         setSubCategory(response.data);
-        Toast.show({
-          text1: 'User login successful',
-          type: 'success',
-        });
         // navigation.navigate('Bottom');
       } else {
-        Toast.show({
-          text1: 'Failed to login!',
-          type: 'error',
-        });
       }
     } catch (error) {
       console.log('Login Error:', error);
@@ -190,16 +170,7 @@ export default function AddExpenseForm() {
       console.log(response.data);
       if (response.msg === 'Data loaded successfully.') {
         setSale(response.data);
-        Toast.show({
-          text1: 'User login successful',
-          type: 'success',
-        });
-
       } else {
-        Toast.show({
-          text1: 'Failed to login!',
-          type: 'error',
-        });
       }
     } catch (error) {
       console.log('Login Error:', error);
@@ -236,13 +207,13 @@ export default function AddExpenseForm() {
   
       if (response.msg === 'Save successfully.') {
         Toast.show({
-          text1: 'Save successfully.',
+          text1: response.msg,
           type: 'success',
         });
         navigation.navigate('Expenses');
       } else {
         Toast.show({
-          text1: 'Failed to save!',
+          text1:response.msg,
           type: 'error',
         });
       }

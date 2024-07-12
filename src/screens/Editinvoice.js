@@ -13,7 +13,7 @@ import { Picker } from '@react-native-picker/picker';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Button from '../components/Button';
 import { NavigationContainer } from '@react-navigation/native';
-import { Get_Expense_Sub__Category_Api, Get_Expense_Category_Api, GST_Api, Customer_Api ,Update_Invoice,Get_Sales_Details_Api} from '../api/authApi';
+import { Get_Expense_Sub__Category_Api, Get_Expense_Category_Api, GST_Api, Customer_Api ,Delete_item_Api,Update_Invoice,Get_Sales_Details_Api} from '../api/authApi';
 import Toast from 'react-native-toast-message';
 import { useRoute } from '@react-navigation/native';
 
@@ -106,24 +106,20 @@ console.log(itemId)
           if (response.msg === 'Data loaded successfully.') {
             const leadData = response.data.order_mst;
       
-            // Set customer ID
             setselectedcustomer(leadData.customer_id);
       
-            // Set sales and due date
             const salesDateValue = new Date(leadData.invoice_date);
             const dueDateValue = new Date(leadData.due_date);
             setSalesDate(salesDateValue);
             setDueDate(dueDateValue);
       
-            // Set TCS and GST type
             setTcs(leadData.service_tax);
             setGst2(leadData.gst_type);
       
-            // Set items (assuming order_det is an array)
             setItems(response.data.order_det);
           } else {
             Toast.show({
-              text1: 'Failed to load invoice details!',
+              text1: response.msg,
               type: 'error',
             });
           }
@@ -144,10 +140,6 @@ console.log(itemId)
         if (response.msg === 'Data loaded successfully.') {
           setCustomer(response.data);
         } else {
-          Toast.show({
-            text1: 'Failed to login!',
-            type: 'error',
-          });
         }
       } catch (error) {
         console.log('Login Error:', error);
@@ -181,10 +173,6 @@ console.log(itemId)
         if (response.msg === 'Data loaded successfully.') {
           setCategory(response.data);
         } else {
-          Toast.show({
-            text1: 'Failed to login!',
-            type: 'error',
-          });
         }
       } catch (error) {
         console.log('Login Error:', error);
@@ -202,10 +190,6 @@ console.log(itemId)
         if (response.msg === 'Data loaded successfully.') {
           setgst(response.data)
         } else {
-          Toast.show({
-            text1: 'Failed to login!',
-            type: 'error',
-          });
         }
       } catch (error) {
         console.log('Login Error:', error);
@@ -223,10 +207,6 @@ console.log(itemId)
         if (response.msg === 'Data loaded successfully.') {
           setSubCategory(response.data);
         } else {
-          Toast.show({
-            text1: 'Failed to login!',
-            type: 'error',
-          });
         }
       } catch (error) {
         console.log('Login Error:', error);
@@ -256,13 +236,13 @@ console.log(itemId)
       
           if (response.msg === "Save Successfully.") {
             Toast.show({
-              text1: 'Save successfully',
+              text1: response.msg, 
               type: 'success',
             });
             navigation.navigate('Invoice')
           } else {
             Toast.show({
-              text1: 'Failed to add lead!',
+              text1:response.msg,
               type: 'error',
             });
           }
@@ -276,59 +256,76 @@ console.log(itemId)
       };
       
   
-    const addItem = () => {
-      if (
-        !selectedcategory ||
-        !selectedSubCategory ||
-        !name ||
-        !quantity ||
-        !price ||
-        !selectedgst ||
-        !Gsttype ||
-        !commision 
-      ) {
-        Toast.show({
-          text1: 'Please fill all fields',
-          type: 'error',
-        });
-        return;
-      }
-    
-      const selectedCategoryObject = category.find(
-        (cat) => cat.id === selectedcategory
-      );
-      const selectedSubCategoryObject = subCategory.find(
-        (subCat) => subCat.name === selectedSubCategory
-      );
-      const selectedGstObject = Gst.find((gst) => gst.gst === selectedgst);
-    
-      const newItem = {
-        prod_category: selectedCategoryObject ? selectedCategoryObject.name : '',
-        prod_subcategory: selectedSubCategoryObject
-          ? selectedSubCategoryObject.name
-          : '',
-        description: name,
-        qty: quantity,
-        price: price,
-        gst: selectedGstObject ? selectedGstObject.gst : '',
-        gst_type: Gsttype,
-        commision: commision, // Include commission here
+      const addItem = () => {
+        if (
+          !selectedcategory ||
+          !selectedSubCategory ||
+          !name ||
+          !quantity ||
+          !price ||
+          !selectedgst ||
+          !Gsttype ||
+          !commision
+        ) {
+          Toast.show({
+            text1: 'Please fill all fields',
+            type: 'error',
+          });
+          return;
+        }
+      
+        const selectedCategoryObject = category.find(
+          (cat) => cat.id === selectedcategory
+        );
+        const selectedSubCategoryObject = subCategory.find(
+          (subCat) => subCat.name === selectedSubCategory
+        );
+        const selectedGstObject = Gst.find((gst) => gst.gst === selectedgst);
+      
+        const newItem = {
+          prod_category: selectedCategoryObject ? selectedCategoryObject.name : '',
+          prod_subcategory: selectedSubCategoryObject
+            ? selectedSubCategoryObject.name
+            : '',
+          description: name,
+          qty: quantity,
+          price: price,
+          gst: selectedGstObject ? selectedGstObject.gst : '',
+          gst_type: Gsttype,
+          commision: commision, // Include commission here
+        };
+      
+        // Update items state to contain only the last added item
+        setItems([newItem]);
+      
+        setselectedcategory('');
+        setselectedSubCategory('');
+        setName('');
+        setQuantity('');
+        setPrice('');
+        setselectedgst('');
+        setgsttye('');
+        setcommision('');
       };
+      
     
-      setItems([...items, newItem]);
-    
-      setselectedcategory('');
-      setselectedSubCategory('');
-      setName('');
-      setQuantity('');
-      setPrice('');
-      setselectedgst('');
-      setgsttye('');
-      setcommision('');
-    };
-    
-    const deleteItem = (indexToDelete) => {
+      const deleteItem =async (indexToDelete) => {
+        try {
+          const response = await Delete_item_Api(indexToDelete);
+          console.log(response.data);
+          if (response.msg === 'Data loaded successfully.') {
+          } else {
+          }
+        } catch (error) {
+          console.log('Login Error:', error);
+          Toast.show({
+            text1: 'Error',
+            type: 'error',
+          });
+        }
+
         const updatedItems = items.filter((item, index) => index !== indexToDelete);
+        console.log('udpade',updatedItems)
         setItems(updatedItems);
       };
   
@@ -511,80 +508,81 @@ console.log(itemId)
             onChangeText={setcommision}
           />
   
-          {items.length > 0 &&
-            items.map((item, index) => (
-              <View key={index} style={styles.itemContainer1}>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <View style={{ flexDirection: 'row', marginBottom: 5 }}>
-                    <Text style={{ fontWeight: '600' }}>Category:</Text>
-                    <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
-                      {' '}
-                      {item.prod_category}
-                    </Text>
-                  </View>
-                  <TouchableOpacity onPress={() => deleteItem(index)}>
-          <Fontisto name="trash" size={20} color="#000" style={styles.icon} />
-        </TouchableOpacity>
-                </View>
-  
-  
-                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
-                  <Text style={{ fontWeight: '600' }}>Sub Category: </Text>
-                  <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
-                    {' '}
-                    {item.prod_subcategory}
-                  </Text>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <View style={{ flexDirection: 'row', marginBottom: 5 }}>
-                    <Text style={{ fontWeight: '600' }}>Price:</Text>
-                    <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
-                      {' '}
-                      {item.price}
-                    </Text>
-                  </View>
-                  <View style={{ flexDirection: 'row', marginBottom: 5 }}>
-                    <Text style={{ fontWeight: '600' }}>Quantity:</Text>
-                    <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
-                      {' '}
-                      {item.qty}
-                    </Text>
-                  </View>
-                </View>
-  
-  
-                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
-                  <Text style={{ fontWeight: '600' }}>GST:</Text>
-                  <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
-                    {' '}
-                    {item.gst}
-                  </Text>
-                </View>
-                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
-                  <Text style={{ fontWeight: '600' }}>Commision:</Text>
-                  <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
-                    {' '}
-                    {item.commision}
-                  </Text>
-                </View>
-                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
-                  <Text style={{ fontWeight: '600' }}>Description:</Text>
-                  <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
-                    {' '}
-                    {item.description}
-                  </Text>
-                </View>
-  
-                <View style={{ flexDirection: 'row', marginBottom: 5 }}>
-                  <Text style={{ fontWeight: '600' }}>GST Type:</Text>
-                  <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
-                    {' '}
-                    {item.gst_type}
-                  </Text>
-                </View>
-              </View>
-            ))}
-  
+  {items.length > 0 && (
+  <View style={styles.itemContainer1}>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+        <Text style={{ fontWeight: '600' }}>Category:</Text>
+        <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+          {' '}
+          {items[items.length - 1].prod_category}
+        </Text>
+      </View>
+      <TouchableOpacity onPress={() => deleteItem(items.length - 1)}>
+        <Fontisto name="trash" size={20} color="#000" style={styles.icon} />
+      </TouchableOpacity>
+    </View>
+
+    <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+      <Text style={{ fontWeight: '600' }}>Sub Category:</Text>
+      <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+        {' '}
+        {items[items.length - 1].prod_subcategory}
+      </Text>
+    </View>
+
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+      <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+        <Text style={{ fontWeight: '600' }}>Price:</Text>
+        <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+          {' '}
+          {items[items.length - 1].price}
+        </Text>
+      </View>
+      <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+        <Text style={{ fontWeight: '600' }}>Quantity:</Text>
+        <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+          {' '}
+          {items[items.length - 1].qty}
+        </Text>
+      </View>
+    </View>
+
+    <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+      <Text style={{ fontWeight: '600' }}>GST:</Text>
+      <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+        {' '}
+        {items[items.length - 1].gst}
+      </Text>
+    </View>
+
+    <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+      <Text style={{ fontWeight: '600' }}>Commission:</Text>
+      <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+        {' '}
+        {items[items.length - 1].commision}
+      </Text>
+    </View>
+
+    <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+      <Text style={{ fontWeight: '600' }}>Description:</Text>
+      <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+        {' '}
+        {items[items.length - 1].description}
+      </Text>
+    </View>
+
+    <View style={{ flexDirection: 'row', marginBottom: 5 }}>
+      <Text style={{ fontWeight: '600' }}>GST Type:</Text>
+      <Text style={{ fontWeight: '700', color: 'black', fontSize: 15 }}>
+        {' '}
+        {items[items.length - 1].gst_type}
+      </Text>
+    </View>
+  </View>
+)}
+
+
           <Button title="Submit" onPress={updateInvoice} />
         </ScrollView>
       </SafeAreaView>

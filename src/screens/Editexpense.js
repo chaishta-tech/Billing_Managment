@@ -105,10 +105,6 @@ console.log(itemId)
         if (response.msg === 'Data loaded successfully.') {
           setCustomer(response.data);
         } else {
-          Toast.show({
-            text1: 'Failed to login!',
-            type: 'error',
-          });
         }
       } catch (error) {
         console.log('Login Error:', error);
@@ -126,10 +122,6 @@ console.log(itemId)
         if (response.msg === 'Data loaded successfully.') {
           setSale(response.data);
         } else {
-          Toast.show({
-            text1: 'Failed to login!',
-            type: 'error',
-          });
         }
       } catch (error) {
         console.log('Login Error:', error);
@@ -170,10 +162,6 @@ console.log(itemId)
         if (response.msg === 'Data loaded successfully.') {
           setCategory(response.data);
         } else {
-          Toast.show({
-            text1: 'Failed to login!',
-            type: 'error',
-          });
         }
       } catch (error) {
         console.log('Login Error:', error);
@@ -213,13 +201,13 @@ console.log(itemId)
     
         if (response.msg === 'Save successfully.') {
           Toast.show({
-            text1: 'Save successfully.',
+            text1: response.msg,
             type: 'success',
           });
           navigation.navigate('Expenses');
         } else {
           Toast.show({
-            text1: 'Failed to save!',
+            text1:response.msg,
             type: 'error',
           });
         }

@@ -604,11 +604,13 @@ export const update_Expense = async (
     const formdata = new FormData();
     formdata.append('customer_id', customerid);
     formdata.append('amount', amount);
-    formdata.append('file', {
-      uri: fileUri,
-      type: 'image/jpeg',
-      name: 'file.jpg',
-    });
+    if (fileUri) {
+      formdata.append('file', {
+        uri: fileUri,
+        type: 'image/jpeg',
+        name: 'file.jpg',
+      });
+    }
     formdata.append('name', name);
     formdata.append('expense_category', category);
     formdata.append('expense_date', date);
@@ -809,6 +811,48 @@ export const Get_Expense_Detail_Api = async (id) => {
     const result = await response.json();
     return result;
 
+  } catch (error) {
+    console.error('API Request Error:', error);
+    throw error;
+  }
+};
+
+export const Delete_item_Api = async (id) => {
+  try {
+    const token = await AsyncStorage.getItem('authToken');
+    console.log('Token:', token);
+
+    if (!token) {
+      throw new Error('Token not found');
+    }
+
+    const myHeaders = new Headers();
+    myHeaders.append('token', token);
+
+    const formdata = new FormData();
+    formdata.append("id", id);
+
+    const requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      redirect: 'follow',
+      body: formdata,
+    };
+
+    const response = await fetch(
+      `${base_url}delete-item`,
+      requestOptions,
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(
+        `Network response was not ok: ${response.statusText} - ${errorText}`,
+      );
+    }
+
+    const result = await response.json();
+    return result;
   } catch (error) {
     console.error('API Request Error:', error);
     throw error;

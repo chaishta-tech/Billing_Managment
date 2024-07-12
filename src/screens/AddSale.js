@@ -100,10 +100,6 @@ export default function AddSale({ navigation }) {
       if (response.msg === 'Data loaded successfully.') {
         setCustomer(response.data);
       } else {
-        Toast.show({
-          text1: 'Failed to login!',
-          type: 'error',
-        });
       }
     } catch (error) {
       console.log('Login Error:', error);
@@ -137,10 +133,6 @@ export default function AddSale({ navigation }) {
       if (response.msg === 'Data loaded successfully.') {
         setCategory(response.data);
       } else {
-        Toast.show({
-          text1: 'Failed to login!',
-          type: 'error',
-        });
       }
     } catch (error) {
       console.log('Login Error:', error);
@@ -158,10 +150,6 @@ export default function AddSale({ navigation }) {
       if (response.msg === 'Data loaded successfully.') {
         setgst(response.data)
       } else {
-        Toast.show({
-          text1: 'Failed to login!',
-          type: 'error',
-        });
       }
     } catch (error) {
       console.log('Login Error:', error);
@@ -179,10 +167,6 @@ export default function AddSale({ navigation }) {
       if (response.msg === 'Data loaded successfully.') {
         setSubCategory(response.data);
       } else {
-        Toast.show({
-          text1: 'Failed to login!',
-          type: 'error',
-        });
       }
     } catch (error) {
       console.log('Login Error:', error);
@@ -211,13 +195,13 @@ export default function AddSale({ navigation }) {
     
         if (response.msg === "Save Successfully.") {
           Toast.show({
-            text1: 'Save successfully',
+            text1:response.msg, 
             type: 'success',
           });
           navigation.navigate('Invoice')
         } else {
           Toast.show({
-            text1: 'Failed to add lead!',
+            text1:response.msg,
             type: 'error',
           });
         }

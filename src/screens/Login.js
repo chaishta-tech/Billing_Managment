@@ -48,14 +48,14 @@ const Login = ({navigation}) => {
         await AsyncStorage.setItem('address', response.data.address);
 
         Toast.show({
-          text1: 'User login successful',
+          text1: response.msg,
           type: 'success',
         });
 
         navigation.navigate('Bottom');
       } else {
         Toast.show({
-          text1: 'Failed to login!',
+          text1: response.msg, 
           type: 'error',
         });
       }
