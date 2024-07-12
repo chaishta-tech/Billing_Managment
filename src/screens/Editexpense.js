@@ -78,7 +78,6 @@ console.log(itemId)
       const selectedType = customer.find(typ => typ.id === itemValue);
       console.log(selectedType)
       setselectedcustomer(itemValue);
-      getSale(selectedType.id);
     };
     const handleExpenseCategory = (itemValue, itemIndex) => {
       console.log(itemValue);
@@ -143,8 +142,9 @@ console.log(itemId)
           setName(expenseData.name);
           setNote(expenseData.note);
           setselectedcategory(expenseData.expense_category);
+          setDate(new Date(expenseData.expense_date)); 
           setSelectedImage(expenseData.file);
-          setselectedcustomer(expenseData.customer_name);
+          setselectedcustomer(expenseData.ids);
           setselectedSale(expenseData.vendor_id);
           setreference(expenseData.ref_no);
         } else {
@@ -397,7 +397,7 @@ console.log(itemId)
               onValueChange={handlecustomer}>
               <Picker.Item label="Select Customer" value="" />
               {customer.map((src, index) => (
-                <Picker.Item key={index} label={src.name} value={src.name} />
+                <Picker.Item key={index} label={src.name} value={src.id} />
               ))}
             </Picker>
           </View>
@@ -431,7 +431,6 @@ console.log(itemId)
             style={styles.input}
             value={reference}
             onChangeText={setreference}
-            keyboardType='numeric'
           />
   
           <Button title="Submit" onPress={Submit} />

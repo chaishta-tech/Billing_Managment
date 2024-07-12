@@ -81,9 +81,11 @@ const Dashboard = ({ navigation }) => {
           <Text style={styles.invoiceText}>Due Date: </Text>
           <Text style={styles.invoiceText1}>{item.due_date}</Text>
         </View>
-        <View style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }}>
+        <Pressable
+          style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }}
+          onPress={() => navigateedit(item)}>
           <MaterialCommunityIcons name="playlist-edit" size={26} color="black" />
-        </View>
+        </Pressable>
       </View>
 
       <View style={styles.button}>
@@ -100,6 +102,14 @@ const Dashboard = ({ navigation }) => {
     </View>
   );
 
+  
+  const navigateedit=(item)=>{
+    navigation.navigate('Edit Invoice',{ itemId: item.id })
+  }
+  const navigatescreen= (item)=>{
+    navigation.navigate('Edit Expense', { itemId: item.id })
+  }
+
   const renderItemexpense = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.leftContent}>
@@ -113,10 +123,9 @@ const Dashboard = ({ navigation }) => {
               <Text style={styles.detailText}>Name:</Text>
               <Text style={styles.text1}> {item.name}</Text>
             </View>
-            <View style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }}>
+            <Pressable style={{ backgroundColor: '#fff', borderRadius: 50, alignItems: 'center', padding: 3 }} onPress={() => navigatescreen(item)}>
               <MaterialCommunityIcons name="playlist-edit" size={26} color="black" />
-            </View>
-
+            </Pressable>
           </View>
 
           <View style={{ flexDirection: 'row' }}>

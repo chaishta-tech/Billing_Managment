@@ -389,7 +389,7 @@ export default function AddSale({ navigation }) {
             onValueChange={handleExpenseSubCategory}>
             <Picker.Item label="Select Sub Category" value="" />
             {subCategory.map((src, index) => (
-              <Picker.Item key={index} label={src.name} value={src.name} />
+              <Picker.Item key={index} label={src.name} value={src.id} />
             ))}
           </Picker>
         </View>
@@ -559,6 +559,7 @@ const styles = StyleSheet.create({
     borderColor: '#959990',
     borderRadius: 5,
     paddingHorizontal: 10,
+    width:'49%'
   },
   dateText: {
     fontSize: 16,

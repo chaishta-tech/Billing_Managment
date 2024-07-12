@@ -64,6 +64,15 @@ const Sale = ({ navigation }) => {
     }
   };
 
+  useFocusEffect(
+    React.useCallback(() => {
+      getCustomer();
+      if (selectedCustomer) {
+        getInvoice(selectedCustomer); 
+      }
+    }, [selectedCustomer])
+  );
+
   const handleCustomer = (itemValue) => {
     setSelectedCustomer(itemValue);
     getInvoice(itemValue);

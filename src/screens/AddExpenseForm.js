@@ -105,10 +105,6 @@ export default function AddExpenseForm() {
       }
     } catch (error) {
       console.log('Login Error:', error);
-      Toast.show({
-        text1: 'Error',
-        type: 'error',
-      });
     }
   };
 
@@ -122,10 +118,6 @@ export default function AddExpenseForm() {
       }
     } catch (error) {
       console.log('Login Error:', error);
-      Toast.show({
-        text1: 'Error',
-        type: 'error',
-      });
     }
   };
 
@@ -139,10 +131,6 @@ export default function AddExpenseForm() {
       }
     } catch (error) {
       console.log('Login Error:', error);
-      Toast.show({
-        text1: 'Error',
-        type: 'error',
-      });
     }
   };
 
@@ -157,10 +145,6 @@ export default function AddExpenseForm() {
       }
     } catch (error) {
       console.log('Login Error:', error);
-      Toast.show({
-        text1: 'Error',
-        type: 'error',
-      });
     }
   };
 
@@ -174,10 +158,6 @@ export default function AddExpenseForm() {
       }
     } catch (error) {
       console.log('Login Error:', error);
-      Toast.show({
-        text1: 'Error',
-        type: 'error',
-      });
     }
   };
 
@@ -437,7 +417,6 @@ export default function AddExpenseForm() {
           style={styles.input}
           value={reference}
           onChangeText={setreference}
-          keyboardType='numeric'
         />
 
         <Button title="Submit" onPress={Submit} />
