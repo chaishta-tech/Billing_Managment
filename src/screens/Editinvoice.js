@@ -12,8 +12,7 @@ import { TextInput } from 'react-native-paper';
 import { Picker } from '@react-native-picker/picker';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Button from '../components/Button';
-import { NavigationContainer } from '@react-navigation/native';
-import { Get_Expense_Sub__Category_Api, Get_Expense_Category_Api, GST_Api, Customer_Api ,Delete_item_Api,Update_Invoice,Get_Sales_Details_Api} from '../api/authApi';
+import { sub_Category_Api, Category_Api , GST_Api, Customer_Api ,Delete_item_Api,Update_Invoice,Get_Sales_Details_Api} from '../api/authApi';
 import Toast from 'react-native-toast-message';
 import { useRoute } from '@react-navigation/native';
 
@@ -168,7 +167,7 @@ console.log(itemId)
   
     const getExpenseCategory = async () => {
       try {
-        const response = await Get_Expense_Category_Api();
+        const response = await Category_Api();
         console.log(response.data);
         if (response.msg === 'Data loaded successfully.') {
           setCategory(response.data);
@@ -202,7 +201,7 @@ console.log(itemId)
   
     const getExpenseSubCategory = async itemValue => {
       try {
-        const response = await Get_Expense_Sub__Category_Api(itemValue);
+        const response = await sub_Category_Api(itemValue);
         console.log(response.data);
         if (response.msg === 'Data loaded successfully.') {
           setSubCategory(response.data);
@@ -311,9 +310,15 @@ console.log(itemId)
     
       const deleteItem =async (indexToDelete) => {
         try {
-          const response = await Delete_item_Api(indexToDelete);
-          console.log(response.data);
-          if (response.msg === 'Data loaded successfully.') {
+          const response = await Delete_item_Api(items[indexToDelete].id);
+          console.log(response);
+          if (response.msg === 'Delete successfully.') {
+            Toast.show({
+              text1: response.msg, 
+              type: 'success',
+            });
+            const updatedItems = items.filter((item, index) => index !== indexToDelete);
+            setItems(updatedItems);
           } else {
           }
         } catch (error) {
@@ -324,9 +329,9 @@ console.log(itemId)
           });
         }
 
-        const updatedItems = items.filter((item, index) => index !== indexToDelete);
-        console.log('udpade',updatedItems)
-        setItems(updatedItems);
+        // const updatedItems = items.filter((item, index) => index !== indexToDelete);
+        // console.log('udpade',updatedItems)
+        // setItems(updatedItems);
       };
   
     return (
@@ -618,6 +623,7 @@ console.log(itemId)
       borderColor: '#959990',
       borderRadius: 5,
       paddingHorizontal: 10,
+      width:'48%'
     },
     dateText: {
       fontSize: 16,
