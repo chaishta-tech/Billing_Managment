@@ -817,7 +817,7 @@ export const Get_Expense_Detail_Api = async (id) => {
   }
 };
 
-export const Delete_item_Api = async (id) => {
+export const Delete_item_Api = async (itemid) => {
   try {
     const token = await AsyncStorage.getItem('authToken');
     console.log('Token:', token);
@@ -830,7 +830,8 @@ export const Delete_item_Api = async (id) => {
     myHeaders.append('token', token);
 
     const formdata = new FormData();
-    formdata.append("id", id);
+    formdata.append("id", itemid);
+    console.log(formdata)
 
     const requestOptions = {
       method: 'POST',
